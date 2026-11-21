@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../i18n/LanguageContext';
 
-type DogMood = 'idle' | 'blink' | 'happy' | 'paw' | 'architect';
+type DogMood = 'idle' | 'blink' | 'happy' | 'paw' | 'architect' | 'walking';
 
 interface Particle {
   id: number;
@@ -15,30 +15,39 @@ interface Particle {
 const DOG_COPY = {
   he: {
     petBtn: 'לטפו אותי',
+    walkBtn: 'טייל!',
+    walkingNow: 'מטייל בבית...',
     chiefBtn: 'האדריכל הראשי 📐',
     bubbles: [
       'וואף! הבית הזה מושלם! 💛',
       'אורית תכננה לי את הפינה הכי נוחה! 🐾',
       'האדריכל הראשי לשירותכם 📐✨',
     ],
+    walkBubble: 'איזה מרחב כיפי לטיול! 🐕✨',
   },
   en: {
     petBtn: 'Pet Me',
+    walkBtn: 'Walk!',
+    walkingNow: 'Exploring...',
     chiefBtn: 'Chief Barkitect 📐',
     bubbles: [
       'Woof! Best house ever! 💛',
       'Orit designed my favorite spot! 🐾',
       'Chief Barkitect at your service 📐✨',
     ],
+    walkBubble: 'So much room to explore! 🐕✨',
   },
   es: {
     petBtn: '¡Acaríciame!',
+    walkBtn: '¡Pasear!',
+    walkingNow: 'Paseando...',
     chiefBtn: 'Arquitecto Jefe 📐',
     bubbles: [
       '¡Guau! ¡Qué casa tan increíble! 💛',
       '¡Orit diseñó mi rincón favorito! 🐾',
       'Arquitecto Jefe a tu servicio 📐✨',
     ],
+    walkBubble: '¡Qué espacio tan genial para pasear! 🐕✨',
   },
 };
 
@@ -68,9 +77,54 @@ export function AnimatedDogStaircase({
   const [particles, setParticles] = useState<Particle[]>([]);
   const [lockedUntil, setLockedUntil] = useState<number>(0);
 
-  const copy = DOG_COPY[lang];
+  // Walking state
+  const [walkFrame, setWalkFrame] = useState<0 | 1>(0);
+  const [walkPos, setWalkPos] = useState<{ left: string; facing: 1 | -1 }>({
+    left: '16%',
+    facing: 1,
+  });
 
-  // Autonomous natural living loop (blinking, happy smile, playful paw wave)
+  const copy = DOG_COPY[lang];
+  const isWalking = mood === 'walking';
+
+  // Alternate walking stride frames cleanly while trotting
+  useEffect(() => {
+    if (!isWalking || prefersReduced) return;
+    const interval = window.setInterval(() => {
+      setWalkFrame((f) => (f === 0 ? 1 : 0));
+    }, 220);
+    return () => window.clearInterval(interval);
+  }, [isWalking, prefersReduced]);
+
+  // Choreographed walking path across the wood floor under the stairs
+  const triggerWalk = (durationMs = 6600, showBubble = true) => {
+    if (prefersReduced) return;
+    setMood('walking');
+    if (showBubble) setSpeech(copy.walkBubble);
+    setLockedUntil(Date.now() + durationMs);
+
+    // Step 1: trot right along the wood floor under the stairs
+    setWalkPos({ left: '16%', facing: 1 });
+    const t1 = window.setTimeout(() => setWalkPos({ left: '34%', facing: 1 }), 120);
+    // Step 2: turn left and trot all the way to the left wall
+    const t2 = window.setTimeout(() => setWalkPos({ left: '4%', facing: -1 }), 2100);
+    // Step 3: turn right and trot back to his favorite spot under the stairs
+    const t3 = window.setTimeout(() => setWalkPos({ left: '17%', facing: 1 }), 4500);
+    // Step 4: sit back down with a cute paw wave!
+    const t4 = window.setTimeout(() => {
+      setMood('paw');
+      setSpeech(null);
+    }, durationMs - 400);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+      window.clearTimeout(t4);
+    };
+  };
+
+  // Autonomous natural living loop (blink, smile, wave, AND periodic stroll under the stairs!)
   useEffect(() => {
     if (prefersReduced) {
       setMood('idle');
@@ -96,18 +150,25 @@ export function AnimatedDogStaircase({
 
     const runCycle = () => {
       setMood('idle');
-      // 1.8s: quick natural blink
-      schedule(() => setMood('blink'), 1800);
-      schedule(() => setMood('idle'), 2100);
-      // 3.3s: joyful smile & tail wag
-      schedule(() => setMood('happy'), 3300);
-      // 5.2s: cute waving paw!
-      schedule(() => setMood('paw'), 5200);
-      // 7.4s: blink back to attentive idle
-      schedule(() => setMood('blink'), 7400);
-      schedule(() => setMood('idle'), 7700);
-      // 9.6s: repeat
-      schedule(runCycle, 9600);
+      // 1.6s: quick natural blink
+      schedule(() => setMood('blink'), 1600);
+      schedule(() => setMood('idle'), 1900);
+      // 3.0s: joyful smile & tail wag
+      schedule(() => setMood('happy'), 3000);
+      // 4.8s: cute waving paw
+      schedule(() => setMood('paw'), 4800);
+      // 6.8s: stand up and take a cute walk around the floor under the stairs!
+      schedule(() => {
+        setMood('walking');
+        setWalkPos({ left: '16%', facing: 1 });
+      }, 6800);
+      schedule(() => setWalkPos({ left: '33%', facing: 1 }), 6950);
+      schedule(() => setWalkPos({ left: '4%', facing: -1 }), 9000);
+      schedule(() => setWalkPos({ left: '17%', facing: 1 }), 11400);
+      // 13.3s: sit back down happily
+      schedule(() => setMood('happy'), 13300);
+      schedule(() => setMood('idle'), 15000);
+      schedule(runCycle, 16500);
     };
 
     runCycle();
@@ -118,7 +179,7 @@ export function AnimatedDogStaircase({
     };
   }, [prefersReduced, hovered, lockedUntil]);
 
-  // Unlock timer after interactive pet reaction finishes
+  // Unlock timer after interactive pet/walk reaction finishes
   useEffect(() => {
     if (!lockedUntil) return;
     const remaining = lockedUntil - Date.now();
@@ -142,7 +203,12 @@ export function AnimatedDogStaircase({
     const nextCount = petCount + 1;
     setPetCount(nextCount);
 
-    const stage = (nextCount - 1) % 3;
+    const stage = (nextCount - 1) % 4;
+    if (stage === 3) {
+      triggerWalk(6600, true);
+      return;
+    }
+
     const nextMood: DogMood =
       stage === 0 ? 'paw' : stage === 1 ? 'happy' : 'architect';
     const durationMs = stage === 2 ? 4800 : 3200;
@@ -151,7 +217,6 @@ export function AnimatedDogStaircase({
     setSpeech(copy.bubbles[stage]);
     setLockedUntil(Date.now() + durationMs);
 
-    // Spawn celebratory floating hearts / paws / architectural sparkles
     const emojis =
       stage === 2
         ? ['📐', '✨', '🐾', '💛', '✨', '🎓', '🐾']
@@ -165,6 +230,13 @@ export function AnimatedDogStaircase({
     }));
     setParticles(burst);
     window.setTimeout(() => setParticles([]), 1200);
+  };
+
+  const handleWalkClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (prefersReduced || isWalking) return;
+    triggerWalk(6600, true);
   };
 
   // Feathered radial mask tightly covering only the dog (including raised paw & wagging tail)
@@ -192,6 +264,19 @@ export function AnimatedDogStaircase({
         loading="lazy"
         className={imgClassName}
       />
+
+      {/* Clean Plate (Empty Floor Under Stairs) — seamlessly hides sitting dog while walking */}
+      {!prefersReduced && (
+        <motion.img
+          src="./assets/gallery/18-staircase-empty.jpg"
+          alt=""
+          aria-hidden="true"
+          style={dogMaskStyle}
+          animate={{ opacity: isWalking ? 1 : 0 }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          className={`absolute inset-0 pointer-events-none ${imgClassName}`}
+        />
+      )}
 
       {/* Blinking frame */}
       {!prefersReduced && (
@@ -271,6 +356,46 @@ export function AnimatedDogStaircase({
         />
       )}
 
+      {/* LIVE WALKING GOLDEN RETRIEVER SPRITE ON THE FLOOR UNDER THE STAIRS */}
+      <AnimatePresence>
+        {!prefersReduced && isWalking && (
+          <motion.div
+            initial={{ opacity: 0, left: '16%' }}
+            animate={{
+              opacity: 1,
+              left: walkPos.left,
+              y: [0, -4, 0],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              left: { duration: 2.0, ease: 'easeInOut' },
+              opacity: { duration: 0.28 },
+              y: { duration: 0.44, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            style={{
+              bottom: maskPreset === 'full' ? '18%' : '4%',
+            }}
+            aria-hidden="true"
+            className="pointer-events-none absolute z-15 w-[34%] sm:w-[32%]"
+          >
+            {/* Realistic soft floor contact shadow */}
+            <div className="absolute -bottom-1 left-[12%] right-[12%] h-3 rounded-full bg-black/35 blur-[5px]" />
+
+            <motion.img
+              src={
+                walkFrame === 0
+                  ? './assets/gallery/dog-walk-1.png'
+                  : './assets/gallery/dog-walk-2.png'
+              }
+              alt=""
+              animate={{ scaleX: walkPos.facing }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full h-auto block drop-shadow-[0_6px_12px_rgba(0,0,0,0.28)] brightness-[0.95] contrast-[0.98]"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Heart / Paw / Sparkle Burst */}
       <div
         aria-hidden="true"
@@ -281,7 +406,13 @@ export function AnimatedDogStaircase({
             <motion.span
               key={p.id}
               initial={{ opacity: 0, x: 0, y: 0, scale: 0.4 }}
-              animate={{ opacity: [0, 1, 1, 0], x: p.x, y: p.y, scale: 1.15, rotate: p.rotate }}
+              animate={{
+                opacity: [0, 1, 1, 0],
+                x: p.x,
+                y: p.y,
+                scale: 1.15,
+                rotate: p.rotate,
+              }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.1, ease: 'easeOut' }}
               className="absolute text-base sm:text-lg drop-shadow"
@@ -292,7 +423,7 @@ export function AnimatedDogStaircase({
         </AnimatePresence>
       </div>
 
-      {/* Cute Localized Speech Bubble on Pet */}
+      {/* Cute Localized Speech Bubble */}
       <AnimatePresence>
         {!prefersReduced && speech && (
           <motion.div
@@ -300,21 +431,22 @@ export function AnimatedDogStaircase({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 360, damping: 24 }}
-            className="pointer-events-none absolute top-[38%] sm:top-[42%] left-3 sm:left-5 z-20 max-w-[210px] bg-[#FAF8F4]/95 backdrop-blur-md text-[#343735] text-xs font-bold px-3.5 py-2 rounded-2xl shadow-xl border border-[#C9BBA7]"
+            className="pointer-events-none absolute top-[38%] sm:top-[42%] left-3 sm:left-5 z-20 max-w-[220px] bg-[#FAF8F4]/95 backdrop-blur-md text-[#343735] text-xs font-bold px-3.5 py-2 rounded-2xl shadow-xl border border-[#C9BBA7]"
           >
             {speech}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Direct Clickable Hotspot Right Over the Dog (works even inside gallery tiles & lightbox!) */}
+      {/* Direct Clickable Hotspot Right Over the Dog (inside gallery tiles & lightbox) */}
       {!prefersReduced && !petOnImageClick && (
         <div
           role="button"
           tabIndex={0}
           onClick={handlePetDog}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handlePetDog(e as unknown as React.MouseEvent);
+            if (e.key === 'Enter' || e.key === ' ')
+              handlePetDog(e as unknown as React.MouseEvent);
           }}
           aria-label={copy.petBtn}
           title={copy.petBtn}
@@ -322,23 +454,47 @@ export function AnimatedDogStaircase({
         />
       )}
 
-      {/* Interactive "Pet Me 🐾" Pill Button */}
+      {/* Interactive Action Pills: "Pet Me 🐾" + "Walk! 🐕" */}
       {!prefersReduced && showBadge && (
-        <motion.div
-          role="button"
-          tabIndex={0}
-          onClick={handlePetDog}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handlePetDog(e as unknown as React.MouseEvent);
-          }}
-          whileHover={{ scale: 1.07 }}
-          whileTap={{ scale: 0.93 }}
-          aria-label={copy.petBtn}
-          className="absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 bg-[#FAF8F4]/95 hover:bg-white backdrop-blur-md text-[#1d3c47] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-[0_8px_24px_rgba(18,41,49,0.28)] border border-[#C9BBA7]/75 cursor-pointer transition-colors select-none"
-        >
-          <span>🐾</span>
-          <span>{mood === 'architect' ? copy.chiefBtn : copy.petBtn}</span>
-        </motion.div>
+        <div className="absolute top-3 left-3 z-30 flex items-center gap-1.5">
+          <motion.div
+            role="button"
+            tabIndex={0}
+            onClick={handlePetDog}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ')
+                handlePetDog(e as unknown as React.MouseEvent);
+            }}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            aria-label={copy.petBtn}
+            className="inline-flex items-center gap-1.5 bg-[#FAF8F4]/95 hover:bg-white backdrop-blur-md text-[#1d3c47] text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_8px_24px_rgba(18,41,49,0.28)] border border-[#C9BBA7]/75 cursor-pointer transition-colors select-none"
+          >
+            <span>🐾</span>
+            <span>{mood === 'architect' ? copy.chiefBtn : copy.petBtn}</span>
+          </motion.div>
+
+          <motion.div
+            role="button"
+            tabIndex={0}
+            onClick={handleWalkClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ')
+                handleWalkClick(e as unknown as React.MouseEvent);
+            }}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            aria-label={copy.walkBtn}
+            className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_8px_24px_rgba(18,41,49,0.28)] border cursor-pointer transition-colors select-none ${
+              isWalking
+                ? 'bg-[#396373] text-[#FAF8F4] border-[#C9BBA7]'
+                : 'bg-[#1d3c47]/90 hover:bg-[#396373] text-[#FAF8F4] border-white/20'
+            }`}
+          >
+            <span>🐕</span>
+            <span>{isWalking ? copy.walkingNow : copy.walkBtn}</span>
+          </motion.div>
+        </div>
       )}
     </div>
   );
