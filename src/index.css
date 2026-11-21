@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@theme {
+  --color-petrol: #245d66;
+  --color-petrol-deep: #183f47;
+  --color-petrol-night: #102c32;
+  --color-petrol-soft: #6e9293;
+  --color-ivory: #f5f1e9;
+  --color-paper: #fbf9f5;
+  --color-sand: #e6ddd1;
+  --color-sand-dark: #c9b8a4;
+  --color-brass: #b89f82;
+  --color-sage-mist: #edf2ee;
+  --color-ink: #292e2e;
+  --color-muted: #5d6562;
+
+  --font-serif: "Frank Ruhl Libre", Georgia, "Times New Roman", serif;
+  --font-sans: "Heebo", Arial, sans-serif;
+  --font-num: "Cormorant Garamond", Georgia, serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, .font-editorial {
+    font-family: var(--font-serif);
+  }
+}
+
+/* Subtle architectural drafting grid texture */
+.arch-grid-light {
+  background-image:
+    linear-gradient(to left, rgba(36, 93, 102, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(36, 93, 102, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.arch-grid-dark {
+  background-image:
+    linear-gradient(to left, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f1e9;
+}
+::-webkit-scrollbar-thumb {
+  background: #6e9293;
+  border-radius: 999px;
+  border: 2px solid #f5f1e9;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #245d66;
+}
+
+/* Honeypot hidden safely for RTL */
+.form-honeypot {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   Israeli Standard SI 5568 / WCAG 2.0 AA Accessibility Modes
+   ========================================================= */
+
+/* Clear keyboard focus rings everywhere */
+:focus-visible {
+  outline: 3px solid #245d66 !important;
+  outline-offset: 3px !important;
+}
+
+/* Monochrome (Grayscale) */
+html.a11y-monochrome body > #root {
+  filter: grayscale(100%);
+}
+
+/* High Contrast Mode */
+html.a11y-high-contrast,
+html.a11y-high-contrast body,
+html.a11y-high-contrast main,
+html.a11y-high-contrast section,
+html.a11y-high-contrast header,
+html.a11y-high-contrast footer,
+html.a11y-high-contrast article,
+html.a11y-high-contrast div:not(.a11y-exclude):not(.a11y-exclude *) {
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border-color: #ffe600 !important;
+}
+
+html.a11y-high-contrast h1,
+html.a11y-high-contrast h2,
+html.a11y-high-contrast h3,
+html.a11y-high-contrast h4,
+html.a11y-high-contrast strong,
+html.a11y-high-contrast a:not(.a11y-exclude):not(.a11y-exclude *),
+html.a11y-high-contrast button:not(.a11y-exclude):not(.a11y-exclude *) {
+  color: #ffe600 !important;
+}
+
+html.a11y-high-contrast input,
+html.a11y-high-contrast textarea {
+  background-color: #111111 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffe600 !important;
+}
+
+/* Highlight Links & Buttons */
+html.a11y-highlight-links a:not(.a11y-exclude):not(.a11y-exclude *),
+html.a11y-highlight-links button:not(.a11y-exclude):not(.a11y-exclude *) {
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  outline: 2px solid #d97706 !important;
+  outline-offset: 2px !important;
+}
+
+/* Readable Sans-Serif Font Override */
+html.a11y-readable-font,
+html.a11y-readable-font body,
+html.a11y-readable-font h1,
+html.a11y-readable-font h2,
+html.a11y-readable-font h3,
+html.a11y-readable-font h4,
+html.a11y-readable-font .font-editorial,
+html.a11y-readable-font * {
+  font-family: Arial, "Heebo", Helvetica, sans-serif !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Stop All Animations & Transitions */
+html.a11y-stop-animations *,
+html.a11y-stop-animations *::before,
+html.a11y-stop-animations *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Large High-Visibility Cursor */
+html.a11y-large-cursor,
+html.a11y-large-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath d='M4 3l10 28 4-11 11-4z' fill='%23183f47' stroke='%23ffffff' stroke-width='2.5'/%3E%3C/svg%3E") 4 3, auto !important;
+}
+
