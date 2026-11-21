@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Expand, X, ChevronRight, ChevronLeft } from 'lucide-react';
-import {
-  GALLERY_CATEGORIES,
-  GALLERY_ITEMS,
-  GalleryCategory,
-  GalleryItem,
-} from '../data/siteData';
+import { ArrowLeft, ArrowRight, Expand, X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { GALLERY_ITEMS, GalleryCategory } from '../data/siteData';
 import {
   Eyebrow,
   Reveal,
@@ -15,18 +10,31 @@ import {
 } from './ArchitecturalReveal';
 import { BeforeAfterSection } from './BeforeAfterSlider';
 import { AnimatedDogStaircase } from './AnimatedDogStaircase';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function PortfolioSection() {
+  const { t, isRtl } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<GalleryCategory>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { setCursorLabel } = useCursorLabel();
 
+  const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
+
+  const localizedItems = GALLERY_ITEMS.map((item) => {
+    const tr = t.portfolio.items.find((x) => x.id === item.id);
+    return {
+      ...item,
+      title: tr?.title ?? item.title,
+      alt: tr?.alt ?? item.alt,
+    };
+  });
+
   const filteredItems =
     activeCategory === 'all'
-      ? GALLERY_ITEMS
-      : GALLERY_ITEMS.filter((item) => item.category === activeCategory);
+      ? localizedItems
+      : localizedItems.filter((item) => item.category === activeCategory);
 
-  const currentLightboxItem: GalleryItem | null =
+  const currentLightboxItem =
     lightboxIndex !== null ? filteredItems[lightboxIndex] ?? null : null;
 
   useEffect(() => {
@@ -36,14 +44,20 @@ export function PortfolioSection() {
       if (e.key === 'Escape') setLightboxIndex(null);
       if (e.key === 'ArrowLeft') {
         setLightboxIndex((i) =>
-          i === null ? null : (i + 1) % filteredItems.length
+          i === null
+            ? null
+            : isRtl
+            ? (i + 1) % filteredItems.length
+            : (i - 1 + filteredItems.length) % filteredItems.length
         );
       }
       if (e.key === 'ArrowRight') {
         setLightboxIndex((i) =>
           i === null
             ? null
-            : (i - 1 + filteredItems.length) % filteredItems.length
+            : isRtl
+            ? (i - 1 + filteredItems.length) % filteredItems.length
+            : (i + 1) % filteredItems.length
         );
       }
     };
@@ -54,21 +68,21 @@ export function PortfolioSection() {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKey);
     };
-  }, [lightboxIndex, filteredItems.length]);
+  }, [lightboxIndex, filteredItems.length, isRtl]);
 
   return (
     <section id="portfolio" className="py-20 sm:py-28 bg-[#FAF8F4]">
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div className="max-w-[660px]">
-            <Eyebrow>מתוך תיק העבודות</Eyebrow>
+            <Eyebrow>{t.portfolio.eyebrow}</Eyebrow>
             <Reveal delay={0.08}>
               <h2 className="text-[2.3rem] sm:text-[3.35rem] font-bold leading-[1.1] text-[#343735] mt-4 mb-4">
-                בתים עם אופי. <span className="text-[#396373]">תכנון עם מחשבה.</span>
+                {t.portfolio.heading1}{' '}
+                <span className="text-[#396373]">{t.portfolio.heading2}</span>
               </h2>
               <p className="text-[#5c625f] text-base sm:text-[1.12rem] leading-[1.82] m-0">
-                מבחר חללים ופרטים מתוך פרויקטים שתכננתי ועיצבתי – מהתמונה הרחבה
-                ועד הפרטים הקטנים.
+                {t.portfolio.desc}
               </p>
             </Reveal>
           </div>
@@ -76,23 +90,26 @@ export function PortfolioSection() {
             href="#contact"
             className="inline-flex items-center gap-2.5 text-[#396373] hover:text-[#1d3c47] font-bold border-b-2 border-[#C9BBA7] pb-1.5 self-start md:self-end transition-colors group"
           >
-            <span>יש לכם פרויקט בראש?</span>
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            <span>{t.portfolio.cta}</span>
+            <ForwardArrow
+              className={`w-4 h-4 transition-transform ${
+                isRtl ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'
+              }`}
+            />
           </a>
         </div>
 
-        {/* Category Filter Tabs */}
         <div
           role="tablist"
-          aria-label="סינון תיק עבודות לפי חלל"
+          aria-label="Portfolio categories"
           className="flex flex-wrap items-center gap-2 mb-10"
         >
-          {GALLERY_CATEGORIES.map((cat) => {
+          {t.portfolio.categories.map((cat) => {
             const isActive = activeCategory === cat.id;
             const count =
               cat.id === 'all'
-                ? GALLERY_ITEMS.length
-                : GALLERY_ITEMS.filter((i) => i.category === cat.id).length;
+                ? localizedItems.length
+                : localizedItems.filter((i) => i.category === cat.id).length;
 
             return (
               <button
@@ -132,7 +149,6 @@ export function PortfolioSection() {
           })}
         </div>
 
-        {/* Editorial Bento Curated Grid */}
         <motion.div
           layout
           className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 auto-rows-fr"
@@ -142,69 +158,68 @@ export function PortfolioSection() {
               const isWideBento =
                 activeCategory === 'all' && (idx === 0 || idx === 4 || idx === 11);
               return (
-              <motion.button
-                key={item.id}
-                layout
-                type="button"
-                onMouseEnter={() => setCursorLabel('צפייה מלאה')}
-                onMouseLeave={() => setCursorLabel(null)}
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.92 }}
-                transition={{
-                  duration: 0.45,
-                  delay: Math.min(idx * 0.03, 0.24),
-                  ease: EASE_EDITORIAL,
-                }}
-                onClick={() => {
-                  setCursorLabel(null);
-                  setLightboxIndex(idx);
-                }}
-                aria-label={`פתיחת תמונה בגודל מלא: ${item.alt}`}
-                className={`group relative rounded-3xl overflow-hidden bg-[#EAE4DA] border border-[#C9BBA7]/40 shadow-xs hover:shadow-[0_22px_55px_rgba(29,60,71,0.18)] transition-all duration-500 cursor-pointer text-right ${
-                  isWideBento ? 'md:col-span-2 aspect-[16/10] md:aspect-auto' : 'aspect-square'
-                }`}
-              >
-                {item.src.includes('18-staircase') ? (
-                  <AnimatedDogStaircase
-                    alt={item.alt}
-                    className="w-full h-full"
-                    imgClassName="w-full h-full object-cover object-[center_62%] transition-transform duration-700 ease-out group-hover:scale-106"
-                  />
-                ) : (
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                  />
-                )}
+                <motion.button
+                  key={item.id}
+                  layout
+                  type="button"
+                  onMouseEnter={() => setCursorLabel(t.portfolio.cursorLabel)}
+                  onMouseLeave={() => setCursorLabel(null)}
+                  initial={{ opacity: 0, scale: 0.94 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{
+                    duration: 0.45,
+                    delay: Math.min(idx * 0.03, 0.24),
+                    ease: EASE_EDITORIAL,
+                  }}
+                  onClick={() => {
+                    setCursorLabel(null);
+                    setLightboxIndex(idx);
+                  }}
+                  aria-label={item.alt}
+                  className={`group relative rounded-3xl overflow-hidden bg-[#EAE4DA] border border-[#C9BBA7]/40 shadow-xs hover:shadow-[0_22px_55px_rgba(29,60,71,0.18)] transition-all duration-500 cursor-pointer text-start ${
+                    isWideBento
+                      ? 'md:col-span-2 aspect-[16/10] md:aspect-auto'
+                      : 'aspect-square'
+                  }`}
+                >
+                  {item.src.includes('18-staircase') ? (
+                    <AnimatedDogStaircase
+                      alt={item.alt}
+                      className="w-full h-full"
+                      imgClassName="w-full h-full object-cover object-[center_62%] transition-transform duration-700 ease-out group-hover:scale-106"
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={item.alt}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                    />
+                  )}
 
-                {/* Frosted Cream Glass Slide-Up Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-                  <div className="self-end w-10 h-10 rounded-full bg-[#FAF8F4]/92 text-[#396373] flex items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
-                    <Expand className="w-4 h-4" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                    <div className="self-end w-10 h-10 rounded-full bg-[#FAF8F4]/92 text-[#396373] flex items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+                      <Expand className="w-4 h-4" />
+                    </div>
+                    <div className="bg-[#FAF8F4]/92 backdrop-blur-md rounded-2xl px-4 py-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+                      <span className="block text-[#343735] font-bold text-sm sm:text-base leading-snug">
+                        {item.title}
+                      </span>
+                      <span className="hidden sm:block text-[#5c625f] text-xs mt-0.5 line-clamp-1">
+                        {item.alt}
+                      </span>
+                    </div>
                   </div>
-                  <div className="bg-[#FAF8F4]/92 backdrop-blur-md rounded-2xl px-4 py-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
-                    <span className="block text-[#343735] font-bold text-sm sm:text-base leading-snug">
-                      {item.title}
-                    </span>
-                    <span className="hidden sm:block text-[#5c625f] text-xs mt-0.5 line-clamp-1">
-                      {item.alt}
-                    </span>
-                  </div>
-                </div>
-              </motion.button>
+                </motion.button>
               );
             })}
           </AnimatePresence>
         </motion.div>
 
-        {/* Interactive Before & After Section */}
         <BeforeAfterSection />
       </div>
 
-      {/* Premium Lightbox */}
       <AnimatePresence>
         {currentLightboxItem && lightboxIndex !== null && (
           <motion.div
@@ -214,7 +229,7 @@ export function PortfolioSection() {
             transition={{ duration: 0.25 }}
             role="dialog"
             aria-modal="true"
-            aria-label="תצוגת תמונה מוגדלת"
+            aria-label={currentLightboxItem.title}
             onClick={() => setLightboxIndex(null)}
             className="fixed inset-0 z-[80] bg-[#122931]/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-8"
           >
@@ -228,7 +243,7 @@ export function PortfolioSection() {
               <button
                 type="button"
                 onClick={() => setLightboxIndex(null)}
-                aria-label="סגירה"
+                aria-label={t.portfolio.close}
                 className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -247,10 +262,12 @@ export function PortfolioSection() {
                       filteredItems.length
                   )
                 }
-                aria-label="תמונה קודמת"
-                className="hidden sm:flex shrink-0 ml-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white items-center justify-center transition-colors cursor-pointer"
+                aria-label={t.portfolio.prev}
+                className={`hidden sm:flex shrink-0 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white items-center justify-center transition-colors cursor-pointer ${
+                  isRtl ? 'ml-4' : 'mr-4'
+                }`}
               >
-                <ChevronRight className="w-6 h-6" />
+                {isRtl ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
               </button>
 
               <motion.div
@@ -291,10 +308,12 @@ export function PortfolioSection() {
                 onClick={() =>
                   setLightboxIndex((lightboxIndex + 1) % filteredItems.length)
                 }
-                aria-label="תמונה הבאה"
-                className="hidden sm:flex shrink-0 mr-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white items-center justify-center transition-colors cursor-pointer"
+                aria-label={t.portfolio.next}
+                className={`hidden sm:flex shrink-0 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white items-center justify-center transition-colors cursor-pointer ${
+                  isRtl ? 'mr-4' : 'ml-4'
+                }`}
               >
-                <ChevronLeft className="w-6 h-6" />
+                {isRtl ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
               </button>
             </div>
 
@@ -312,7 +331,7 @@ export function PortfolioSection() {
                 }
                 className="px-4 py-2 rounded-full bg-white/10 text-white text-sm inline-flex items-center gap-1"
               >
-                <ChevronRight className="w-4 h-4" /> הקודם
+                {t.portfolio.prev}
               </button>
               <button
                 type="button"
@@ -321,7 +340,7 @@ export function PortfolioSection() {
                 }
                 className="px-4 py-2 rounded-full bg-white/10 text-white text-sm inline-flex items-center gap-1"
               >
-                הבא <ChevronLeft className="w-4 h-4" />
+                {t.portfolio.next}
               </button>
             </div>
           </motion.div>

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface OritBrandLogoProps {
   variant?: 'dark' | 'light';
@@ -13,6 +14,7 @@ export function OritBrandLogo({
   animated = false,
   showSubtitle = true,
 }: OritBrandLogoProps) {
+  const { t, isRtl } = useLanguage();
   const strokeColor = variant === 'light' ? '#FAF8F4' : '#1d3c47';
   const textColor = variant === 'light' ? '#FAF8F4' : '#1d3c47';
   const subColor = variant === 'light' ? 'rgba(250,248,244,0.82)' : '#343735';
@@ -141,10 +143,10 @@ export function OritBrandLogo({
         Orit Goldstein
       </motion.span>
 
-      {/* Hebrew Tagline with Hairlines */}
+      {/* Tagline with Hairlines */}
       {showSubtitle && (
         <motion.div
-          dir="rtl"
+          dir={isRtl ? 'rtl' : 'ltr'}
           initial={animated ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.55 }}
@@ -152,7 +154,7 @@ export function OritBrandLogo({
           className={`flex items-center gap-2.5 mt-1 font-medium tracking-[0.06em] ${dimensions.sub}`}
         >
           <span style={{ backgroundColor: ruleColor }} className="block w-5 sm:w-7 h-[1px]" />
-          <span>אדריכלות | עיצוב פנים</span>
+          <span>{t.brandSubtitle}</span>
           <span style={{ backgroundColor: ruleColor }} className="block w-5 sm:w-7 h-[1px]" />
         </motion.div>
       )}

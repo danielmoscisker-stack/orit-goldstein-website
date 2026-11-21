@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MotionConfig } from 'framer-motion';
+import { LanguageProvider } from './i18n/LanguageContext';
 import {
   AmbientCursorGlow,
   ArchitecturalPreloader,
@@ -41,40 +42,42 @@ export function App() {
   };
 
   return (
-    <MotionConfig reducedMotion={stopAnimations ? 'always' : 'user'}>
-      <CustomCursorProvider disabled={stopAnimations}>
-        <div className="min-h-screen bg-[#FAF8F4] text-[#343735]">
-          <AccessibilityWidget
-            statementOpen={statementOpen}
-            setStatementOpen={setStatementOpen}
-            onStopAnimationsChange={setStopAnimations}
-          />
-          <ArchitecturalPreloader />
-          <AmbientCursorGlow />
-          <ScrollProgressBar />
-          <Navbar />
-          <main id="main-content" tabIndex={-1} className="outline-none">
-            <Hero />
-            <KineticMarquee />
-            <ValueStrip />
-            <MaterialBoardSection />
-            <PhilosophySection />
-            <HorizontalShowcase />
-            <ServicesSection onSelectService={handleSelectService} />
-            <PortfolioSection />
-            <ProcessSection />
-            <AboutSection />
-            <RecommendationsSection />
-            <ContactSection
-              selectedService={selectedService}
-              onClearService={() => setSelectedService(null)}
+    <LanguageProvider>
+      <MotionConfig reducedMotion={stopAnimations ? 'always' : 'user'}>
+        <CustomCursorProvider disabled={stopAnimations}>
+          <div className="min-h-screen bg-[#FAF8F4] text-[#343735]">
+            <AccessibilityWidget
+              statementOpen={statementOpen}
+              setStatementOpen={setStatementOpen}
+              onStopAnimationsChange={setStopAnimations}
             />
-          </main>
-          <Footer onOpenAccessibilityStatement={() => setStatementOpen(true)} />
-          <FloatingWhatsApp />
-        </div>
-      </CustomCursorProvider>
-    </MotionConfig>
+            <ArchitecturalPreloader />
+            <AmbientCursorGlow />
+            <ScrollProgressBar />
+            <Navbar />
+            <main id="main-content" tabIndex={-1} className="outline-none">
+              <Hero />
+              <KineticMarquee />
+              <ValueStrip />
+              <MaterialBoardSection />
+              <PhilosophySection />
+              <HorizontalShowcase />
+              <ServicesSection onSelectService={handleSelectService} />
+              <PortfolioSection />
+              <ProcessSection />
+              <AboutSection />
+              <RecommendationsSection />
+              <ContactSection
+                selectedService={selectedService}
+                onClearService={() => setSelectedService(null)}
+              />
+            </main>
+            <Footer onOpenAccessibilityStatement={() => setStatementOpen(true)} />
+            <FloatingWhatsApp />
+          </div>
+        </CustomCursorProvider>
+      </MotionConfig>
+    </LanguageProvider>
   );
 }
 

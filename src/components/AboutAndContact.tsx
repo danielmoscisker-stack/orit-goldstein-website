@@ -5,17 +5,21 @@ import {
   Phone,
   MessageCircle,
   ArrowLeft,
+  ArrowRight,
   Award,
   CheckCircle2,
   Expand,
   X,
   Quote,
 } from 'lucide-react';
-import { CONTACT_INFO, CREDENTIALS } from '../data/siteData';
+import { CONTACT_INFO } from '../data/siteData';
 import { Eyebrow, Reveal, EASE_EDITORIAL } from './ArchitecturalReveal';
 import { OritBrandLogo } from './OritBrandLogo';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function AboutSection() {
+  const { t, isRtl } = useLanguage();
+
   return (
     <section
       id="about"
@@ -23,7 +27,6 @@ export function AboutSection() {
     >
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Portrait with Editorial Sand Frame */}
           <div className="lg:col-span-5 flex justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.94 }}
@@ -36,7 +39,7 @@ export function AboutSection() {
               <div className="relative rounded-3xl overflow-hidden shadow-[0_28px_70px_rgba(29,60,71,0.16)] bg-[#EAE4DA]">
                 <img
                   src="./assets/site/orit-profile.webp"
-                  alt="אורית גולדשטיין – אדריכלית ומעצבת פנים"
+                  alt={t.about.name}
                   loading="lazy"
                   className="w-full aspect-[4/5] object-cover object-[center_26%] saturate-[0.92] hover:scale-[1.03] transition-transform duration-700"
                 />
@@ -47,59 +50,50 @@ export function AboutSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.35, duration: 0.7, ease: EASE_EDITORIAL }}
-                className="absolute -bottom-5 -right-3 sm:-right-6 bg-[#396373] text-[#FAF8F4] rounded-2xl px-5 py-3.5 shadow-xl border border-white/15 flex items-center gap-3"
+                className={`absolute -bottom-5 bg-[#396373] text-[#FAF8F4] rounded-2xl px-5 py-3.5 shadow-xl border border-white/15 flex items-center gap-3 ${
+                  isRtl ? '-right-3 sm:-right-6' : '-left-3 sm:-left-6'
+                }`}
               >
                 <Award className="w-6 h-6 text-[#C9BBA7] shrink-0" />
                 <div className="text-xs leading-snug">
                   <strong className="block text-sm font-bold">
-                    אדריכלית ומהנדסת
+                    {t.about.badgeTitle}
                   </strong>
-                  <span className="text-[#FAF8F4]/80">B.Arch · M.Sc · מרצה</span>
+                  <span className="text-[#FAF8F4]/80">{t.about.badgeSub}</span>
                 </div>
               </motion.div>
             </motion.div>
           </div>
 
-          {/* Bio & Credentials */}
           <div className="lg:col-span-7">
-            <Eyebrow>נעים להכיר</Eyebrow>
+            <Eyebrow>{t.about.eyebrow}</Eyebrow>
             <Reveal delay={0.08}>
               <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mt-4 mb-6">
                 <h2 className="text-[2.4rem] sm:text-[3.4rem] font-bold leading-[1.08] text-[#343735] m-0">
-                  אורית גולדשטיין
+                  {t.about.name}
                 </h2>
-                <span className="font-script text-3xl sm:text-4xl text-[#396373]/80" dir="ltr">
-                  Orit Goldstein
-                </span>
+                {isRtl && (
+                  <span className="font-script text-3xl sm:text-4xl text-[#396373]/80" dir="ltr">
+                    Orit Goldstein
+                  </span>
+                )}
               </div>
             </Reveal>
 
             <div className="space-y-4 text-[#4c524f] text-base sm:text-[1.06rem] leading-[1.86]">
               <Reveal delay={0.14}>
-                <p className="m-0">
-                  אדריכלית ומעצבת פנים, המאמינה שתכנון טוב מתחיל בהבנה עמוקה של
-                  האנשים והמרחב. אני משלבת חשיבה אדריכלית, הבנה הנדסית ורגישות
-                  עיצובית כדי ליצור בתים מדויקים, נוחים ומלאי אופי.
-                </p>
+                <p className="m-0">{t.about.p1}</p>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="m-0">
-                  אני בעלת תואר ראשון באדריכלות ובינוי ערים ותואר שני בהנדסה
-                  אזרחית בהתמחות בניהול פרויקטים. לצד לימודי הום סטיילינג והכשרות
-                  בתחומי תאורה, חומרים וטכנולוגיות חדשות, אני מרצה לתכנון אדריכלי
-                  כבר 12 שנים ומקפידה להמשיך ללמוד ולהתעדכן.
-                </p>
+                <p className="m-0">{t.about.p2}</p>
               </Reveal>
               <Reveal delay={0.26}>
-                <p className="m-0">
-                  החיבור בין העולמות מאפשר לי ללוות את הפרויקט בראייה רחבה –
-                  מהתכנון והמערכות ועד לחומר, לאור ולפרט העיצובי האחרון.
-                </p>
+                <p className="m-0">{t.about.p3}</p>
               </Reveal>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-8">
-              {CREDENTIALS.map((cred, idx) => (
+              {t.about.credentials.map((cred, idx) => (
                 <motion.div
                   key={cred.title}
                   initial={{ opacity: 0, y: 16 }}
@@ -111,7 +105,11 @@ export function AboutSection() {
                     ease: EASE_EDITORIAL,
                   }}
                   whileHover={{ y: -3 }}
-                  className="bg-[#EAE4DA]/55 rounded-2xl p-4 sm:p-5 border border-[#C9BBA7]/50 border-r-[3px] border-r-[#396373] shadow-xs flex items-center justify-between gap-3"
+                  className={`bg-[#EAE4DA]/55 rounded-2xl p-4 sm:p-5 border border-[#C9BBA7]/50 shadow-xs flex items-center justify-between gap-3 ${
+                    isRtl
+                      ? 'border-r-[3px] border-r-[#396373]'
+                      : 'border-l-[3px] border-l-[#396373]'
+                  }`}
                 >
                   <div>
                     <strong className="block text-[#343735] text-[0.98rem] font-bold">
@@ -138,6 +136,7 @@ export function AboutSection() {
 }
 
 export function RecommendationsSection() {
+  const { t } = useLanguage();
   const [openZoom, setOpenZoom] = useState(false);
 
   useEffect(() => {
@@ -157,15 +156,14 @@ export function RecommendationsSection() {
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8">
         <div className="max-w-[660px] mx-auto text-center mb-12">
           <div className="flex justify-center">
-            <Eyebrow>מילים מלקוחות</Eyebrow>
+            <Eyebrow>{t.recommendations.eyebrow}</Eyebrow>
           </div>
           <Reveal delay={0.08}>
             <h2 className="text-[2.3rem] sm:text-[3.35rem] font-bold leading-[1.1] text-[#343735] mt-4 mb-4">
-              החוויה שמאחורי התוצאה.
+              {t.recommendations.heading}
             </h2>
             <p className="text-[#5c625f] text-base sm:text-[1.1rem] leading-[1.82] m-0">
-              מילים מלקוחות שליוויתי לאורך תהליך התכנון והעיצוב, על הדרך המשותפת
-              ועל התוצאה.
+              {t.recommendations.desc}
             </p>
           </Reveal>
         </div>
@@ -176,18 +174,18 @@ export function RecommendationsSection() {
             <button
               type="button"
               onClick={() => setOpenZoom(true)}
-              aria-label="פתיחת צילום ההמלצה בגודל מלא"
+              aria-label={t.recommendations.zoomBtn}
               className="group block w-full rounded-3xl overflow-hidden bg-white border border-[#C9BBA7]/50 shadow-[0_20px_55px_rgba(29,60,71,0.1)] hover:shadow-[0_28px_70px_rgba(29,60,71,0.16)] transition-all duration-400 cursor-pointer relative"
             >
               <img
                 src="./assets/site/testimonial-shulamit-whatsapp.png"
-                alt="צילום מסך מקורי של המלצת שולי מרטין ב-WhatsApp"
+                alt="Client WhatsApp recommendation"
                 loading="lazy"
                 className="w-full h-auto block"
               />
               <div className="absolute bottom-3.5 left-3.5 bg-[#396373]/90 backdrop-blur-md text-[#FAF8F4] text-xs font-bold px-4 py-2 rounded-full inline-flex items-center gap-1.5 opacity-95 group-hover:opacity-100 transition-opacity shadow-md">
                 <Expand className="w-3.5 h-3.5" />
-                <span>לחצו להגדלה</span>
+                <span>{t.recommendations.zoomBtn}</span>
               </div>
             </button>
           </div>
@@ -203,13 +201,13 @@ export function RecommendationsSection() {
             onClick={() => setOpenZoom(false)}
             role="dialog"
             aria-modal="true"
-            aria-label="המלצת לקוחה מוגדלת"
+            aria-label={t.recommendations.eyebrow}
             className="fixed inset-0 z-[80] bg-[#122931]/92 backdrop-blur-md flex items-center justify-center p-5"
           >
             <button
               type="button"
               onClick={() => setOpenZoom(false)}
-              aria-label="סגירה"
+              aria-label={t.portfolio.close}
               className="absolute top-5 left-5 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center cursor-pointer"
             >
               <X className="w-5 h-5" />
@@ -219,7 +217,7 @@ export function RecommendationsSection() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.94, opacity: 0 }}
               src="./assets/site/testimonial-shulamit-whatsapp.png"
-              alt="צילום מסך מקורי של המלצת שולי מרטין ב-WhatsApp"
+              alt="Client WhatsApp recommendation"
               onClick={(e) => e.stopPropagation()}
               className="max-w-[min(780px,94vw)] max-h-[86vh] object-contain rounded-2xl shadow-2xl bg-white"
             />
@@ -237,8 +235,10 @@ export function ContactSection({
   selectedService: string | null;
   onClearService: () => void;
 }) {
+  const { t, isRtl } = useLanguage();
   const [sentSuccess, setSentSuccess] = useState(false);
   const [messageValue, setMessageValue] = useState('');
+  const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('contact') === 'sent') {
@@ -248,11 +248,9 @@ export function ContactSection({
 
   useEffect(() => {
     if (selectedService) {
-      setMessageValue(
-        `שלום אורית, אשמח לשמוע פרטים נוספים לגבי "${selectedService}". `
-      );
+      setMessageValue(t.contact.prefillTemplate(selectedService));
     }
-  }, [selectedService]);
+  }, [selectedService, t.contact]);
 
   return (
     <section
@@ -265,20 +263,19 @@ export function ContactSection({
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-start">
           <div className="lg:col-span-5">
-            <Eyebrow light>הצעד הראשון לבית שלכם</Eyebrow>
+            <Eyebrow light>{t.contact.eyebrow}</Eyebrow>
             <Reveal delay={0.08}>
-              <h2 className="text-[2.4rem] sm:text-[3.5rem] font-bold leading-[1.08] mt-4 mb-5 text-[#FAF8F4]">
-                יש לכם חלום לבית?
+              <h2 className="text-[2.4rem] sm:text-[3.4rem] font-bold leading-[1.08] mt-4 mb-5 text-[#FAF8F4]">
+                {t.contact.heading1}
                 <br />
-                <span className="text-[#C9BBA7]">בואו נחשוב עליו יחד.</span>
+                <span className="text-[#C9BBA7]">{t.contact.heading2}</span>
               </h2>
               <p className="text-[#FAF8F4]/82 text-base sm:text-[1.08rem] leading-[1.82] mb-9">
-                בין אם אתם בתחילת הדרך, לפני רכישת דירה או כבר מתכננים שיפוץ –
-                אשמח להכיר, להבין מה אתם צריכים ולבדוק איך נכון להתקדם.
+                {t.contact.desc}
               </p>
             </Reveal>
 
-            <div className="space-y-3.5" aria-label="פרטי התקשרות">
+            <div className="space-y-3.5">
               <a
                 href={`mailto:${CONTACT_INFO.email}`}
                 className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 transition-all duration-300 group"
@@ -287,7 +284,7 @@ export function ContactSection({
                   <Mail className="w-5 h-5" />
                 </span>
                 <div>
-                  <span className="block text-xs text-white/65">אימייל</span>
+                  <span className="block text-xs text-white/65">{t.contact.emailLabel}</span>
                   <span dir="ltr" className="text-base font-bold text-[#FAF8F4]">
                     {CONTACT_INFO.email}
                   </span>
@@ -302,9 +299,9 @@ export function ContactSection({
                   <Phone className="w-5 h-5" />
                 </span>
                 <div>
-                  <span className="block text-xs text-white/65">טלפון</span>
+                  <span className="block text-xs text-white/65">{t.contact.phoneLabel}</span>
                   <span className="text-base font-bold text-[#FAF8F4]">
-                    <span dir="ltr">{CONTACT_INFO.phoneDisplay}</span> · התקשרות
+                    <span dir="ltr">{CONTACT_INFO.phoneDisplay}</span> · {t.contact.callWord}
                   </span>
                 </div>
               </a>
@@ -319,11 +316,9 @@ export function ContactSection({
                   <MessageCircle className="w-5 h-5" />
                 </span>
                 <div>
-                  <span className="block text-xs text-[#b8f7cf]">
-                    זמינה גם בוואטסאפ
-                  </span>
+                  <span className="block text-xs text-[#b8f7cf]">{t.contact.waSub}</span>
                   <span className="text-base font-bold text-[#FAF8F4]">
-                    שליחת הודעת WhatsApp
+                    {t.contact.waLabel}
                   </span>
                 </div>
               </a>
@@ -338,22 +333,24 @@ export function ContactSection({
             className="lg:col-span-7 bg-[#FAF8F4] text-[#343735] rounded-3xl p-6 sm:p-10 shadow-[0_28px_80px_rgba(0,0,0,0.3)] border border-white/30"
           >
             <h3 className="text-3xl font-bold text-[#343735] m-0 mb-1.5">
-              ספרו לי קצת על הפרויקט
+              {t.contact.formTitle}
             </h3>
             <p className="text-[#5c625f] text-sm sm:text-base m-0 mb-6">
-              מלאו את הפרטים ואחזור אליכם בהקדם.
+              {t.contact.formSub}
             </p>
 
             {selectedService && (
               <div className="mb-5 inline-flex items-center gap-2 bg-[#EAE4DA] text-[#396373] border border-[#C9BBA7] px-4 py-1.5 rounded-full text-xs font-bold">
-                <span>מסלול נבחר: {selectedService}</span>
+                <span>
+                  {t.contact.selectedTrackPrefix} {selectedService}
+                </span>
                 <button
                   type="button"
                   onClick={() => {
                     onClearService();
                     setMessageValue('');
                   }}
-                  aria-label="הסרת מסלול נבחר"
+                  aria-label="Clear"
                   className="text-[#396373] hover:text-[#1d3c47] cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -365,10 +362,10 @@ export function ContactSection({
               <div
                 role="status"
                 aria-live="polite"
-                className="mb-6 flex items-center gap-3 p-4 rounded-xl bg-[#e9f2ec] border-r-4 border-[#4d8769] text-[#28563f] text-sm font-medium"
+                className="mb-6 flex items-center gap-3 p-4 rounded-xl bg-[#e9f2ec] border-s-4 border-[#4d8769] text-[#28563f] text-sm font-medium"
               >
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
-                <span>תודה שפניתם! ההודעה נשלחה בהצלחה. אחזור אליכם בהקדם.</span>
+                <span>{t.contact.successMsg}</span>
               </div>
             )}
 
@@ -382,8 +379,8 @@ export function ContactSection({
                 name="_subject"
                 value={
                   selectedService
-                    ? `פנייה חדשה מאתר אורית גולדשטיין – ${selectedService}`
-                    : 'פנייה חדשה מאתר אורית גולדשטיין'
+                    ? `New Inquiry – Orit Goldstein (${selectedService})`
+                    : 'New Inquiry – Orit Goldstein Website'
                 }
               />
               <input
@@ -401,31 +398,31 @@ export function ContactSection({
               />
 
               <label className="flex flex-col gap-1.5 text-sm font-bold text-[#343735]">
-                <span>שם מלא</span>
+                <span>{t.contact.nameLabel}</span>
                 <input
                   type="text"
                   name="name"
                   autoComplete="name"
-                  placeholder="איך קוראים לכם?"
+                  placeholder={t.contact.namePh}
                   required
                   className="w-full rounded-xl border border-[#C9BBA7]/70 bg-white px-4 py-3 text-base font-normal text-[#343735] outline-none focus:border-[#396373] focus:ring-3 focus:ring-[#396373]/15 transition-all"
                 />
               </label>
 
               <label className="flex flex-col gap-1.5 text-sm font-bold text-[#343735]">
-                <span>טלפון</span>
+                <span>{t.contact.phoneFieldLabel}</span>
                 <input
                   type="tel"
                   name="phone"
                   autoComplete="tel"
                   inputMode="tel"
-                  placeholder="מספר טלפון לחזרה"
+                  placeholder={t.contact.phonePh}
                   className="w-full rounded-xl border border-[#C9BBA7]/70 bg-white px-4 py-3 text-base font-normal text-[#343735] outline-none focus:border-[#396373] focus:ring-3 focus:ring-[#396373]/15 transition-all"
                 />
               </label>
 
               <label className="sm:col-span-2 flex flex-col gap-1.5 text-sm font-bold text-[#343735]">
-                <span>כתובת מייל</span>
+                <span>{t.contact.emailFieldLabel}</span>
                 <input
                   type="email"
                   name="email"
@@ -437,21 +434,20 @@ export function ContactSection({
               </label>
 
               <label className="sm:col-span-2 flex flex-col gap-1.5 text-sm font-bold text-[#343735]">
-                <span>בכמה מילים על הפרויקט</span>
+                <span>{t.contact.messageLabel}</span>
                 <textarea
                   name="message"
                   rows={4}
                   value={messageValue}
                   onChange={(e) => setMessageValue(e.target.value)}
-                  placeholder="ספרו לי מה אתם מתכננים..."
+                  placeholder={t.contact.messagePh}
                   required
                   className="w-full rounded-xl border border-[#C9BBA7]/70 bg-white px-4 py-3 text-base font-normal text-[#343735] outline-none focus:border-[#396373] focus:ring-3 focus:ring-[#396373]/15 transition-all resize-y min-h-[120px]"
                 />
               </label>
 
               <p className="sm:col-span-2 text-xs text-[#626764] leading-relaxed m-0">
-                הפרטים יועברו באמצעות שירות חיצוני לצורך שליחת הפנייה למייל העסקי,
-                וישמשו לחזרה אליכם בקשר לפנייה בלבד.
+                {t.contact.privacy}
               </p>
 
               <div className="sm:col-span-2 pt-1">
@@ -459,8 +455,12 @@ export function ContactSection({
                   type="submit"
                   className="btn-shimmer inline-flex items-center justify-center gap-3 bg-[#396373] hover:bg-[#1d3c47] text-[#FAF8F4] font-bold px-8 py-4 rounded-full shadow-[0_12px_28px_rgba(57,99,115,0.28)] hover:shadow-[0_16px_34px_rgba(29,60,71,0.34)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer w-full sm:w-auto group"
                 >
-                  <span>שליחת הפנייה</span>
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span>{t.contact.submit}</span>
+                  <ForwardArrow
+                    className={`w-4 h-4 transition-transform ${
+                      isRtl ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'
+                    }`}
+                  />
                 </button>
               </div>
             </form>
@@ -476,34 +476,35 @@ export function Footer({
 }: {
   onOpenAccessibilityStatement: () => void;
 }) {
+  const { t } = useLanguage();
   const year = new Date().getFullYear();
 
   return (
     <footer className="bg-[#122931] text-[#FAF8F4]/72 py-10 text-xs sm:text-sm border-t border-white/10">
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <a href="#top" aria-label="חזרה לראש העמוד" className="inline-flex">
+        <a href="#top" aria-label={t.metaTitle} className="inline-flex">
           <OritBrandLogo variant="light" size="sm" />
         </a>
 
         <div className="flex flex-wrap items-center gap-5">
           <a href="#about" className="hover:text-white transition-colors">
-            אודות
+            {t.nav.about}
           </a>
           <a href="#services" className="hover:text-white transition-colors">
-            שירותים
+            {t.nav.services}
           </a>
           <a href="#portfolio" className="hover:text-white transition-colors">
-            פרויקטים
+            {t.nav.portfolio}
           </a>
           <a href="#contact" className="hover:text-white transition-colors">
-            יצירת קשר
+            {t.nav.contactCta}
           </a>
           <button
             type="button"
             onClick={onOpenAccessibilityStatement}
             className="text-[#C9BBA7] hover:text-white underline underline-offset-4 transition-colors cursor-pointer bg-transparent border-0 p-0 font-semibold"
           >
-            הצהרת נגישות
+            {t.footer.a11yStatement}
           </button>
           <a
             href={`mailto:${CONTACT_INFO.email}`}
@@ -514,7 +515,9 @@ export function Footer({
           </a>
         </div>
 
-        <span className="text-white/55">© {year} אורית גולדשטיין · כל הזכויות שמורות</span>
+        <span className="text-white/55">
+          © {year} {t.footer.copyright}
+        </span>
       </div>
     </footer>
   );
@@ -526,7 +529,7 @@ export function FloatingWhatsApp() {
       href={CONTACT_INFO.whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="שליחת הודעת WhatsApp לאורית גולדשטיין"
+      aria-label="WhatsApp"
       initial={{ opacity: 0, scale: 0.7, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ delay: 1.2, duration: 0.5, ease: EASE_EDITORIAL }}
