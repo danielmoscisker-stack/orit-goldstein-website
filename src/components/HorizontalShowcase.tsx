@@ -1,15 +1,27 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
 import { Eyebrow, EASE_EDITORIAL, useCursorLabel } from './ArchitecturalReveal';
 import { AnimatedDogStaircase } from './AnimatedDogStaircase';
+import { CaseStudyDrawer, CaseStudyItem } from './CaseStudyDrawer';
 import { useLanguage } from '../i18n/LanguageContext';
 
-export function HorizontalShowcase() {
-  const { t, isRtl } = useLanguage();
+export function HorizontalShowcase({
+  onInquire,
+}: {
+  onInquire?: (projectTitle: string) => void;
+}) {
+  const { t, isRtl, lang } = useLanguage();
+  const [activeStory, setActiveStory] = useState<CaseStudyItem | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
   const { setCursorLabel } = useCursorLabel();
+
+  const storyLabel = {
+    he: 'סיפור הפרויקט',
+    en: 'Project Story',
+    es: 'Ver Historia',
+  }[lang];
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -82,13 +94,26 @@ export function HorizontalShowcase() {
                     )}
                   </div>
                   <div className="p-6 flex items-start justify-between gap-4 bg-gradient-to-t from-[#122931] via-[#173540] to-[#1d3c47]">
-                    <div>
+                    <div className="flex-1">
                       <h3 className="text-xl font-bold text-[#FAF8F4] m-0 mb-1 group-hover:text-[#C9BBA7] transition-colors">
                         {slide.title}
                       </h3>
                       <p className="text-sm text-[#FAF8F4]/72 m-0 leading-relaxed">
                         {slide.subtitle}
                       </p>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setCursorLabel(null);
+                          setActiveStory(slide);
+                        }}
+                        className="mt-3.5 inline-flex items-center gap-1.5 text-xs font-bold text-[#C9BBA7] hover:text-white bg-white/8 hover:bg-white/15 px-3.5 py-1.5 rounded-full border border-white/12 transition-colors cursor-pointer"
+                      >
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>{storyLabel}</span>
+                      </button>
                     </div>
                     <span className="font-num text-3xl text-[#C9BBA7]/85 leading-none shrink-0">
                       {slide.num}
@@ -150,6 +175,12 @@ export function HorizontalShowcase() {
           </span>
         </div>
       </div>
+
+      <CaseStudyDrawer
+        item={activeStory}
+        onClose={() => setActiveStory(null)}
+        onInquire={(title) => onInquire?.(title)}
+      />
     </section>
   );
 }

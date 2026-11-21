@@ -1,13 +1,20 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, ChevronDown, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, Moon, Sparkles, Sun } from 'lucide-react';
 import { EASE_EDITORIAL, MagneticLink } from './ArchitecturalReveal';
 import { useLanguage } from '../i18n/LanguageContext';
 
 export function Hero() {
-  const { t, isRtl } = useLanguage();
+  const { t, isRtl, lang } = useLanguage();
+  const [eveningMode, setEveningMode] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+
+  const lightingLabels = {
+    he: { day: 'אור יום', evening: 'אווירת ערב' },
+    en: { day: 'Daylight', evening: 'Evening Glow' },
+    es: { day: 'Luz de Día', evening: 'Luz de Tarde' },
+  }[lang];
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -36,7 +43,18 @@ export function Hero() {
           alt={t.hero.floatingQuote}
           fetchPriority="high"
           style={prefersReduced ? undefined : { y: imgY, scale: imgScale }}
-          className="w-full h-full object-cover object-center will-change-transform"
+          className={`w-full h-full object-cover object-center will-change-transform transition-all duration-1000 ${
+            eveningMode
+              ? 'brightness-[0.72] contrast-[1.08] sepia-[0.24] saturate-[1.22]'
+              : 'brightness-100 contrast-100'
+          }`}
+        />
+        {/* Warm Architectural Evening Tungsten Glow Overlay */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 bg-[radial-gradient(circle_at_62%_38%,rgba(255,196,112,0.34)_0%,rgba(29,60,71,0.36)_65%,rgba(18,41,49,0.58)_100%)] ${
+            eveningMode ? 'opacity-100' : 'opacity-0'
+          }`}
         />
         <div
           className={`absolute inset-0 ${
@@ -178,7 +196,44 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          <div className="hidden lg:flex lg:col-span-6 xl:col-span-7 flex-col items-end justify-end h-[520px] pointer-events-none">
+          <div className="hidden lg:flex lg:col-span-6 xl:col-span-7 flex-col items-end justify-between h-[520px] pointer-events-none">
+            {/* Architectural Daylight / Evening Lighting Switcher */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.55, ease: EASE_EDITORIAL }}
+              className="pointer-events-auto inline-flex items-center p-1 rounded-full bg-[#FAF8F4]/88 backdrop-blur-xl border border-white/80 shadow-[0_12px_34px_rgba(18,41,49,0.18)]"
+              role="group"
+              aria-label="Lighting mood"
+            >
+              <button
+                type="button"
+                onClick={() => setEveningMode(false)}
+                aria-pressed={!eveningMode}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  !eveningMode
+                    ? 'bg-[#396373] text-[#FAF8F4] shadow-xs'
+                    : 'text-[#343735]/80 hover:text-[#396373]'
+                }`}
+              >
+                <Sun className="w-3.5 h-3.5" />
+                <span>{lightingLabels.day}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEveningMode(true)}
+                aria-pressed={eveningMode}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  eveningMode
+                    ? 'bg-[#1d3c47] text-[#C9BBA7] shadow-xs'
+                    : 'text-[#343735]/80 hover:text-[#396373]'
+                }`}
+              >
+                <Moon className="w-3.5 h-3.5" />
+                <span>{lightingLabels.evening}</span>
+              </button>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
