@@ -162,7 +162,11 @@ export function PortfolioSection() {
                   key={item.id}
                   layout
                   type="button"
-                  onMouseEnter={() => setCursorLabel(t.portfolio.cursorLabel)}
+                  onMouseEnter={() =>
+                    setCursorLabel(
+                      item.src.includes('18-staircase') ? null : t.portfolio.cursorLabel
+                    )
+                  }
                   onMouseLeave={() => setCursorLabel(null)}
                   initial={{ opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
