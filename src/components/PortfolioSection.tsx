@@ -7,12 +7,18 @@ import {
   GalleryCategory,
   GalleryItem,
 } from '../data/siteData';
-import { Eyebrow, Reveal, EASE_EDITORIAL } from './ArchitecturalReveal';
+import {
+  Eyebrow,
+  Reveal,
+  EASE_EDITORIAL,
+  useCursorLabel,
+} from './ArchitecturalReveal';
 import { BeforeAfterSection } from './BeforeAfterSlider';
 
 export function PortfolioSection() {
   const [activeCategory, setActiveCategory] = useState<GalleryCategory>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const { setCursorLabel } = useCursorLabel();
 
   const filteredItems =
     activeCategory === 'all'
@@ -125,17 +131,22 @@ export function PortfolioSection() {
           })}
         </div>
 
-        {/* Editorial Curated Grid */}
+        {/* Editorial Bento Curated Grid */}
         <motion.div
           layout
-          className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5"
+          className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 auto-rows-fr"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, idx) => (
+            {filteredItems.map((item, idx) => {
+              const isWideBento =
+                activeCategory === 'all' && (idx === 0 || idx === 4 || idx === 11);
+              return (
               <motion.button
                 key={item.id}
                 layout
                 type="button"
+                onMouseEnter={() => setCursorLabel('צפייה מלאה')}
+                onMouseLeave={() => setCursorLabel(null)}
                 initial={{ opacity: 0, scale: 0.94 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.92 }}
@@ -144,9 +155,14 @@ export function PortfolioSection() {
                   delay: Math.min(idx * 0.03, 0.24),
                   ease: EASE_EDITORIAL,
                 }}
-                onClick={() => setLightboxIndex(idx)}
+                onClick={() => {
+                  setCursorLabel(null);
+                  setLightboxIndex(idx);
+                }}
                 aria-label={`פתיחת תמונה בגודל מלא: ${item.alt}`}
-                className="group relative aspect-square rounded-3xl overflow-hidden bg-[#EAE4DA] border border-[#C9BBA7]/40 shadow-xs hover:shadow-[0_22px_55px_rgba(29,60,71,0.18)] transition-all duration-500 cursor-pointer text-right"
+                className={`group relative rounded-3xl overflow-hidden bg-[#EAE4DA] border border-[#C9BBA7]/40 shadow-xs hover:shadow-[0_22px_55px_rgba(29,60,71,0.18)] transition-all duration-500 cursor-pointer text-right ${
+                  isWideBento ? 'md:col-span-2 aspect-[16/10] md:aspect-auto' : 'aspect-square'
+                }`}
               >
                 <img
                   src={item.src}
@@ -170,7 +186,8 @@ export function PortfolioSection() {
                   </div>
                 </div>
               </motion.button>
-            ))}
+              );
+            })}
           </AnimatePresence>
         </motion.div>
 

@@ -104,6 +104,33 @@
   animation: leafSway 14s ease-in-out infinite;
 }
 
+/* Infinite luxury marquee animations */
+@keyframes marqueeRtl {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(33.333%, 0, 0);
+  }
+}
+
+@keyframes marqueeLtr {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-33.333%, 0, 0);
+  }
+}
+
+.animate-marquee-rtl {
+  animation: marqueeRtl 34s linear infinite;
+}
+
+.animate-marquee-ltr {
+  animation: marqueeLtr 42s linear infinite;
+}
+
 /* Shimmer sweep on luxury buttons */
 @keyframes shimmerSweep {
   0% {

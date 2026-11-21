@@ -1,7 +1,14 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Check, Home, Sparkles } from 'lucide-react';
 import { PROCESS_STEPS, SERVICES, VALUE_ITEMS } from '../data/siteData';
-import { Eyebrow, Reveal, EASE_EDITORIAL } from './ArchitecturalReveal';
+import {
+  CountUpNumber,
+  Eyebrow,
+  Reveal,
+  TiltCard3D,
+  EASE_EDITORIAL,
+} from './ArchitecturalReveal';
 
 export function ValueStrip() {
   return (
@@ -40,7 +47,54 @@ export function ValueStrip() {
   );
 }
 
+const QUOTE_WORDS = [
+  'עיצוב',
+  'טוב',
+  'מתחיל',
+  'בהקשבה,',
+  'ומצליח',
+  'כשהוא',
+  'עובד',
+  'נכון',
+  'גם',
+  'ביום־יום.',
+];
+
+function ScrubWord({
+  word,
+  index,
+  total,
+  progress,
+  accent,
+}: {
+  word: string;
+  index: number;
+  total: number;
+  progress: ReturnType<typeof useScroll>['scrollYProgress'];
+  accent: boolean;
+}) {
+  const prefersReduced = useReducedMotion();
+  const start = index / total;
+  const end = Math.min(1, start + 1.4 / total);
+  const opacity = useTransform(progress, [start, end], [0.22, 1]);
+
+  return (
+    <motion.span
+      style={prefersReduced ? undefined : { opacity }}
+      className={`inline-block ml-2.5 ${accent ? 'text-[#396373]' : 'text-[#343735]'}`}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
 export function PhilosophySection() {
+  const quoteRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: quoteRef,
+    offset: ['start 0.85', 'center 0.45'],
+  });
+
   return (
     <section
       id="philosophy"
@@ -57,14 +111,48 @@ export function PhilosophySection() {
 
       <div className="max-w-[1260px] mx-auto px-5 sm:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          <div className="lg:col-span-6">
+          <div ref={quoteRef} className="lg:col-span-6">
             <Eyebrow>הגישה שלי</Eyebrow>
-            <Reveal delay={0.1}>
-              <blockquote className="text-[2.1rem] sm:text-[3rem] font-bold leading-[1.18] text-[#343735] mt-5 m-0 relative pr-6 border-r-[3px] border-[#396373]">
-                עיצוב טוב מתחיל בהקשבה, ומצליח כשהוא עובד נכון{' '}
-                <span className="text-[#396373]">גם ביום־יום.</span>
-              </blockquote>
-            </Reveal>
+            <blockquote className="text-[2.1rem] sm:text-[3.1rem] font-bold leading-[1.2] mt-5 m-0 relative pr-6 border-r-[3px] border-[#396373]">
+              {QUOTE_WORDS.map((word, idx) => (
+                <ScrubWord
+                  key={idx}
+                  word={word}
+                  index={idx}
+                  total={QUOTE_WORDS.length}
+                  progress={scrollYProgress}
+                  accent={idx >= 8}
+                />
+              ))}
+            </blockquote>
+
+            {/* Live Counting Architectural Metrics */}
+            <div className="grid grid-cols-3 gap-4 mt-9 pt-7 border-t border-[#C9BBA7]/50">
+              <div>
+                <div className="font-num text-3xl sm:text-4xl font-semibold text-[#396373]">
+                  <CountUpNumber target={12} suffix="+" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-[#5c625f]">
+                  שנות הוראה באדריכלות
+                </span>
+              </div>
+              <div>
+                <div className="font-num text-3xl sm:text-4xl font-semibold text-[#396373]">
+                  <CountUpNumber target={2} />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-[#5c625f]">
+                  תארים: אדריכלות והנדסה
+                </span>
+              </div>
+              <div>
+                <div className="font-num text-3xl sm:text-4xl font-semibold text-[#396373]">
+                  <CountUpNumber target={100} suffix="%" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-[#5c625f]">
+                  תכנון אישי ומדויק
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-6 space-y-5">
@@ -124,19 +212,18 @@ export function ServicesSection({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {SERVICES.map((service, idx) => (
-            <motion.article
-              key={service.num}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.7, delay: idx * 0.1, ease: EASE_EDITORIAL }}
-              whileHover={{ y: -8 }}
-              className={`group relative rounded-3xl p-7 sm:p-8 flex flex-col transition-shadow duration-400 ${
-                service.highlighted
-                  ? 'bg-gradient-to-b from-[#1d3c47] to-[#396373] text-[#FAF8F4] shadow-[0_26px_65px_rgba(29,60,71,0.3)] border border-white/15'
-                  : 'bg-[#FAF8F4] text-[#343735] border border-[#C9BBA7]/50 hover:shadow-[0_22px_55px_rgba(29,60,71,0.12)]'
-              }`}
-            >
+            <TiltCard3D key={service.num} className="rounded-3xl h-full">
+              <motion.article
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.7, delay: idx * 0.1, ease: EASE_EDITORIAL }}
+                className={`group relative h-full rounded-3xl p-7 sm:p-8 flex flex-col transition-shadow duration-400 ${
+                  service.highlighted
+                    ? 'bg-gradient-to-b from-[#1d3c47] to-[#396373] text-[#FAF8F4] shadow-[0_26px_65px_rgba(29,60,71,0.3)] border border-white/15'
+                    : 'bg-[#FAF8F4] text-[#343735] border border-[#C9BBA7]/50 hover:shadow-[0_22px_55px_rgba(29,60,71,0.12)]'
+                }`}
+              >
               <div
                 className={`absolute top-0 right-7 left-7 h-[3px] rounded-b-full ${
                   service.highlighted
@@ -224,7 +311,8 @@ export function ServicesSection({
                   <ArrowLeft className="w-4 h-4" />
                 </button>
               </div>
-            </motion.article>
+              </motion.article>
+            </TiltCard3D>
           ))}
         </div>
 
