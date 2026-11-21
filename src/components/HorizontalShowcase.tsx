@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Eyebrow, EASE_EDITORIAL, useCursorLabel } from './ArchitecturalReveal';
+import { AnimatedDogStaircase } from './AnimatedDogStaircase';
 
 const PROMENADE_SLIDES = [
   {
@@ -95,12 +96,20 @@ export function HorizontalShowcase() {
                 className="group relative w-[82vw] sm:w-[440px] lg:w-[480px] shrink-0 rounded-3xl overflow-hidden bg-[#1d3c47] border border-white/15 shadow-[0_28px_70px_rgba(0,0,0,0.38)]"
               >
                 <div className="aspect-[16/11] overflow-hidden">
-                  <img
-                    src={slide.src}
-                    alt={`${slide.title} – ${slide.subtitle}`}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                  />
+                  {slide.src.includes('18-staircase') ? (
+                    <AnimatedDogStaircase
+                      alt={`${slide.title} – ${slide.subtitle}`}
+                      className="w-full h-full"
+                      imgClassName="w-full h-full object-cover object-[center_58%] transition-transform duration-700 ease-out group-hover:scale-106"
+                    />
+                  ) : (
+                    <img
+                      src={slide.src}
+                      alt={`${slide.title} – ${slide.subtitle}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                    />
+                  )}
                 </div>
                 <div className="p-6 flex items-start justify-between gap-4 bg-gradient-to-t from-[#122931] via-[#173540] to-[#1d3c47]">
                   <div>

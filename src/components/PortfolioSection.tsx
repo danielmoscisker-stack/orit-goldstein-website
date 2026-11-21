@@ -14,6 +14,7 @@ import {
   useCursorLabel,
 } from './ArchitecturalReveal';
 import { BeforeAfterSection } from './BeforeAfterSlider';
+import { AnimatedDogStaircase } from './AnimatedDogStaircase';
 
 export function PortfolioSection() {
   const [activeCategory, setActiveCategory] = useState<GalleryCategory>('all');
@@ -164,12 +165,20 @@ export function PortfolioSection() {
                   isWideBento ? 'md:col-span-2 aspect-[16/10] md:aspect-auto' : 'aspect-square'
                 }`}
               >
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                />
+                {item.src.includes('18-staircase') ? (
+                  <AnimatedDogStaircase
+                    alt={item.alt}
+                    className="w-full h-full"
+                    imgClassName="w-full h-full object-cover object-[center_62%] transition-transform duration-700 ease-out group-hover:scale-106"
+                  />
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                  />
+                )}
 
                 {/* Frosted Cream Glass Slide-Up Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
@@ -252,11 +261,21 @@ export function PortfolioSection() {
                 transition={{ duration: 0.28, ease: EASE_EDITORIAL }}
                 className="flex flex-col items-center"
               >
-                <img
-                  src={currentLightboxItem.src}
-                  alt={currentLightboxItem.alt}
-                  className="max-w-full max-h-[72vh] object-contain rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.5)] bg-[#1d3c47]"
-                />
+                {currentLightboxItem.src.includes('18-staircase') ? (
+                  <AnimatedDogStaircase
+                    alt={currentLightboxItem.alt}
+                    className="max-w-full max-h-[72vh] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.5)] bg-[#1d3c47]"
+                    imgClassName="max-w-full max-h-[72vh] object-contain"
+                    showBadge={false}
+                    maskPreset="full"
+                  />
+                ) : (
+                  <img
+                    src={currentLightboxItem.src}
+                    alt={currentLightboxItem.alt}
+                    className="max-w-full max-h-[72vh] object-contain rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.5)] bg-[#1d3c47]"
+                  />
+                )}
                 <div className="mt-4 text-center max-w-xl">
                   <p className="text-[#FAF8F4] font-bold text-base m-0">
                     {currentLightboxItem.title}
