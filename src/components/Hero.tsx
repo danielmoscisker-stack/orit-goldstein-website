@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Compass, Sparkles, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Sparkles } from 'lucide-react';
 import { EASE_EDITORIAL, MagneticLink } from './ArchitecturalReveal';
 
 export function Hero() {
@@ -13,172 +13,186 @@ export function Hero() {
   });
 
   const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.03, 1.12]);
-  const floatCardY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%']);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.1]);
+  const copyY = useTransform(scrollYProgress, [0, 1], ['0%', '8%']);
 
   return (
     <section
       ref={sectionRef}
       id="top"
-      className="relative bg-[#f5f1e9] arch-grid-light overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24"
+      className="relative min-h-[calc(100vh-94px)] flex items-center bg-[#FAF8F4] overflow-hidden"
     >
-      {/* Ambient architectural geometry */}
-      <motion.svg
-        viewBox="0 0 400 400"
+      {/* Full-Bleed Architectural Sunlit Photography (Left side in RTL, blending seamlessly into Cream) */}
+      <div className="absolute inset-0 lg:right-[30%] overflow-hidden">
+        <motion.img
+          src="./assets/site/living-room.webp"
+          alt="סלון ופינת אוכל בעיצוב חם ומדויק, עם נגרות בהתאמה אישית"
+          fetchPriority="high"
+          style={prefersReduced ? undefined : { y: imgY, scale: imgScale }}
+          className="w-full h-full object-cover object-center will-change-transform"
+        />
+        {/* Signature Soft Cream Feathered Gradient (matching the brand board laptop hero) */}
+        <div className="absolute inset-0 bg-gradient-to-l from-[#FAF8F4] via-[#FAF8F4]/92 lg:via-[#FAF8F4]/72 to-[#FAF8F4]/15 lg:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#FAF8F4] via-transparent to-[#FAF8F4]/30 lg:hidden" />
+      </div>
+
+      {/* Organic Swaying Botanical Leaf Shadow Overlay (from top-right of brand board) */}
+      <svg
+        viewBox="0 0 500 500"
         fill="none"
         aria-hidden="true"
-        animate={prefersReduced ? undefined : { rotate: 360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
-        className="pointer-events-none absolute -left-32 -bottom-32 w-[420px] h-[420px] text-[#245d66]/[0.08]"
+        className="animate-leaf-sway pointer-events-none absolute -top-16 -right-14 w-[360px] sm:w-[460px] h-[360px] sm:h-[460px] opacity-[0.11] text-[#343735] blur-[3px]"
       >
-        <circle cx="200" cy="200" r="180" stroke="currentColor" strokeWidth="1" strokeDasharray="6 8" />
-        <circle cx="200" cy="200" r="130" stroke="currentColor" strokeWidth="1" />
-        <line x1="200" y1="0" x2="200" y2="400" stroke="currentColor" strokeWidth="0.75" />
-        <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" strokeWidth="0.75" />
-      </motion.svg>
+        <path
+          d="M460 10 C380 80 310 150 220 260"
+          stroke="currentColor"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <ellipse cx="365" cy="70" rx="58" ry="18" transform="rotate(-28 365 70)" fill="currentColor" />
+        <ellipse cx="410" cy="128" rx="64" ry="20" transform="rotate(14 410 128)" fill="currentColor" />
+        <ellipse cx="310" cy="135" rx="56" ry="17" transform="rotate(-35 310 135)" fill="currentColor" />
+        <ellipse cx="350" cy="198" rx="62" ry="18" transform="rotate(18 350 198)" fill="currentColor" />
+        <ellipse cx="265" cy="205" rx="52" ry="16" transform="rotate(-24 265 205)" fill="currentColor" />
+        <ellipse cx="290" cy="265" rx="48" ry="15" transform="rotate(22 290 265)" fill="currentColor" />
+      </svg>
 
-      <div className="max-w-[1220px] mx-auto px-5 sm:px-7 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-stretch">
-          {/* Editorial Copy Column */}
-          <div className="lg:col-span-5 flex flex-col justify-center py-4 lg:py-10 order-2 lg:order-1">
+      {/* Main Content Container */}
+      <div className="max-w-[1260px] w-full mx-auto px-5 sm:px-8 py-16 sm:py-24 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Editorial Copy Card / Column */}
+          <motion.div
+            style={prefersReduced ? undefined : { y: copyY }}
+            className="lg:col-span-6 xl:col-span-5"
+          >
+            {/* Delicate Script Watermark */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: EASE_EDITORIAL }}
-              className="inline-flex items-center gap-2.5 self-start px-3.5 py-1.5 rounded-full bg-white/75 backdrop-blur-sm border border-[#245d66]/15 text-[#245d66] text-xs font-bold tracking-[0.1em] mb-7 shadow-xs"
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.12, ease: EASE_EDITORIAL }}
+              className="inline-flex items-center gap-3 mb-5"
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>אדריכלות · עיצוב פנים · תכנון חכם</span>
+              <span className="w-8 h-[1.5px] bg-[#C9BBA7]" />
+              <span className="text-xs sm:text-sm font-bold tracking-[0.14em] text-[#396373]">
+                אדריכלות · עיצוב פנים · תכנון חכם
+              </span>
             </motion.div>
 
             <div className="overflow-hidden">
               <motion.h1
                 initial={{ y: '100%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.9, delay: 0.25, ease: EASE_EDITORIAL }}
-                className="font-editorial text-[2.9rem] sm:text-[4rem] lg:text-[4.55rem] font-normal leading-[1.04] text-[#183f47] tracking-[-0.01em] mb-6"
+                transition={{ duration: 0.9, delay: 0.22, ease: EASE_EDITORIAL }}
+                className="text-[3rem] sm:text-[4.2rem] xl:text-[4.8rem] font-bold leading-[1.03] text-[#343735] mb-6"
               >
                 בית שמתחיל
                 <br />
-                <span className="relative inline-block">
+                <span className="text-[#396373] relative inline-block">
                   בתכנון נכון.
                   <motion.span
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.9, delay: 0.75, ease: EASE_EDITORIAL }}
+                    transition={{ duration: 0.85, delay: 0.72, ease: EASE_EDITORIAL }}
                     style={{ transformOrigin: 'right' }}
-                    className="absolute right-0 bottom-1.5 h-[8px] w-full bg-[#c9b8a4]/45 -z-10"
+                    className="absolute right-0 -bottom-1 h-[6px] w-full bg-[#C9BBA7]/65 rounded-full -z-10"
                   />
                 </span>
               </motion.h1>
             </div>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.42, ease: EASE_EDITORIAL }}
-              className="text-[1.12rem] sm:text-[1.2rem] text-[#525b58] leading-[1.82] max-w-[500px] mb-9"
+              transition={{ duration: 0.8, delay: 0.4, ease: EASE_EDITORIAL }}
+              className="text-lg sm:text-[1.28rem] text-[#343735]/85 leading-[1.75] max-w-[490px] mb-3 font-medium"
             >
-              מהתכנון ועד הפרט האחרון – בית שמתאים רק לכם. תכנון מדויק, חשיבה רחבה
-              ועיצוב אישי שמחבר בין יופי, נוחות וחיי היומיום.
+              מהתכנון ועד הפרט האחרון – בית שמתאים רק לכם.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.48, ease: EASE_EDITORIAL }}
+              className="text-base sm:text-[1.08rem] text-[#5c625f] leading-[1.82] max-w-[490px] mb-9"
+            >
+              תכנון מדויק, חשיבה רחבה ועיצוב אישי שמחבר בין יופי, נוחות וחיי היומיום.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.56, ease: EASE_EDITORIAL }}
+              transition={{ duration: 0.8, delay: 0.58, ease: EASE_EDITORIAL }}
               className="flex flex-wrap items-center gap-3.5"
             >
               <MagneticLink
-                href="#contact"
-                className="inline-flex items-center justify-center gap-3 bg-[#245d66] hover:bg-[#183f47] text-white font-semibold px-7 py-4 rounded-full shadow-[0_14px_30px_rgba(36,93,102,0.28)] hover:shadow-[0_18px_36px_rgba(24,63,71,0.34)] transition-all duration-300 group"
+                href="#portfolio"
+                className="btn-shimmer inline-flex items-center justify-center gap-3 bg-[#396373] hover:bg-[#1d3c47] text-[#FAF8F4] font-bold px-8 py-4 rounded-full shadow-[0_14px_34px_rgba(57,99,115,0.3)] hover:shadow-[0_18px_40px_rgba(29,60,71,0.38)] transition-all duration-300 group"
               >
-                <span>בואו נדבר על הבית שלכם</span>
+                <span>לצפייה בפרויקטים</span>
                 <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
               </MagneticLink>
 
               <a
-                href="#portfolio"
-                className="inline-flex items-center justify-center gap-2 border border-[#245d66]/40 hover:border-[#245d66] bg-white/50 hover:bg-[#245d66] text-[#183f47] hover:text-white font-semibold px-6 py-4 rounded-full transition-all duration-300"
+                href="#contact"
+                className="inline-flex items-center justify-center gap-2 bg-[#FAF8F4]/85 hover:bg-[#EAE4DA] backdrop-blur-md border border-[#396373]/30 text-[#343735] font-bold px-7 py-4 rounded-full transition-all duration-300 shadow-xs"
               >
-                <span>לצפייה בפרויקטים</span>
+                <span>בואו נדבר על הבית שלכם</span>
               </a>
             </motion.div>
 
+            {/* Elegant Palette Swatch Mini-Strip */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.78 }}
-              className="flex items-center gap-3.5 mt-11 pt-7 border-t border-[#245d66]/12 text-sm text-[#5d6562]"
+              transition={{ delay: 0.85, duration: 0.8 }}
+              className="mt-12 pt-6 border-t border-[#C9BBA7]/50 flex flex-wrap items-center justify-between gap-4 max-w-[460px]"
             >
-              <span className="block w-8 h-[1.5px] bg-[#c9b8a4] shrink-0" />
-              <span>תכנון אדריכלי ועיצוב פנים מתוך ראייה שלמה של הבית</span>
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#5c625f]">
+                <Sparkles className="w-3.5 h-3.5 text-[#396373]" />
+                <span>תכנון אדריכלי ועיצוב פנים מתוך ראייה שלמה</span>
+              </div>
+              <div className="flex items-center gap-1.5" aria-hidden="true">
+                {['#396373', '#C9BBA7', '#EAE4DA', '#FAF8F4', '#343735'].map((c) => (
+                  <span
+                    key={c}
+                    style={{ backgroundColor: c }}
+                    className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-xs"
+                  />
+                ))}
+              </div>
             </motion.div>
-          </div>
+          </motion.div>
 
-          {/* Cinematic Parallax Image Column */}
-          <div className="lg:col-span-7 order-1 lg:order-2 relative">
+          {/* Floating Glassmorphic Studio Highlight Card on the Sunlit Photo Side */}
+          <div className="hidden lg:flex lg:col-span-6 xl:col-span-7 flex-col items-end justify-end h-[520px] pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, clipPath: 'inset(0 0 12% 0 round 20px)' }}
-              animate={{ opacity: 1, clipPath: 'inset(0 0 0% 0 round 20px)' }}
-              transition={{ duration: 1.05, delay: 0.2, ease: EASE_EDITORIAL }}
-              className="relative h-[380px] sm:h-[520px] lg:h-[630px] rounded-[20px] overflow-hidden shadow-[0_30px_80px_rgba(24,63,71,0.18)] bg-[#ded7cc]"
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.9, delay: 0.65, ease: EASE_EDITORIAL }}
+              className="pointer-events-auto bg-[#FAF8F4]/86 backdrop-blur-xl border border-white/80 rounded-3xl p-6 max-w-[330px] shadow-[0_24px_65px_rgba(29,60,71,0.18)]"
             >
-              <motion.img
-                src="./assets/site/living-room.webp"
-                alt="סלון ופינת אוכל בעיצוב חם ומדויק, עם נגרות בהתאמה אישית"
-                fetchPriority="high"
-                style={prefersReduced ? undefined : { y: imgY, scale: imgScale }}
-                className="w-full h-full object-cover object-center will-change-transform"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#102c32]/45 via-transparent to-[#102c32]/10 pointer-events-none" />
-
-              {/* Floating Editorial Caption */}
-              <motion.div
-                style={prefersReduced ? undefined : { y: floatCardY }}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.85, delay: 0.65, ease: EASE_EDITORIAL }}
-                className="absolute bottom-5 right-5 left-5 sm:left-auto sm:max-w-[340px] bg-[#fbf9f5]/92 backdrop-blur-md border border-white/70 rounded-2xl p-4 sm:p-5 shadow-xl"
-              >
-                <div className="flex items-center gap-2 text-[#245d66] text-xs font-bold mb-1">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>חתימת סטודיו</span>
-                </div>
-                <p className="text-[#183f47] font-semibold text-sm sm:text-[0.95rem] leading-relaxed m-0">
-                  חללים מדויקים. חיים שנעים לחיות בהם.
-                </p>
-              </motion.div>
-
-              {/* Floating Architectural Badge (Top-Left) */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.75, delay: 0.85, ease: EASE_EDITORIAL }}
-                className="hidden sm:flex absolute top-5 left-5 bg-[#183f47]/85 backdrop-blur-md text-white border border-white/15 rounded-2xl px-4 py-3 items-center gap-3 shadow-lg"
-              >
-                <span
-                  className="text-2xl font-normal text-[#d8c3a5] leading-none"
-                  style={{ fontFamily: 'var(--font-num)' }}
-                >
-                  12+
+              <div className="flex items-center justify-between gap-4 mb-3">
+                <span className="font-script text-3xl text-[#396373] leading-none" dir="ltr">
+                  Orit Goldstein
                 </span>
-                <div className="text-xs leading-tight text-white/90">
-                  <strong className="block font-semibold">שנות הוראה</strong>
-                  <span className="text-white/70">בתכנון אדריכלי</span>
-                </div>
-              </motion.div>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#EAE4DA] text-[#396373]">
+                  12+ שנות הוראה
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-[#343735] leading-relaxed m-0">
+                חללים מדויקים. חומרים טבעיים. חיים שנעים לחיות בהם.
+              </p>
             </motion.div>
           </div>
         </div>
 
-        {/* Subtle Scroll Indicator */}
+        {/* Animated Scroll Cue */}
         <motion.a
-          href="#philosophy"
+          href="#studio-board"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.1, duration: 0.7 }}
-          className="hidden lg:inline-flex items-center gap-2 text-xs font-semibold text-[#245d66]/75 hover:text-[#245d66] mt-8 transition-colors"
+          className="hidden lg:inline-flex items-center gap-2 text-xs font-bold text-[#396373] hover:text-[#1d3c47] mt-6 transition-colors"
         >
           <motion.span
             animate={prefersReduced ? undefined : { y: [0, 5, 0] }}
@@ -186,7 +200,7 @@ export function Hero() {
           >
             <ChevronDown className="w-4 h-4" />
           </motion.span>
-          <span>גלילה לגילוי הגישה והפרויקטים</span>
+          <span>גלילה ללוח החומרים והפרויקטים</span>
         </motion.a>
       </div>
     </section>

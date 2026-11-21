@@ -50,17 +50,16 @@ export function PortfolioSection() {
   }, [lightboxIndex, filteredItems.length]);
 
   return (
-    <section id="portfolio" className="py-20 sm:py-28 bg-[#fbf9f5]">
-      <div className="max-w-[1220px] mx-auto px-5 sm:px-7">
-        {/* Header */}
+    <section id="portfolio" className="py-20 sm:py-28 bg-[#FAF8F4]">
+      <div className="max-w-[1260px] mx-auto px-5 sm:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div className="max-w-[660px]">
             <Eyebrow>מתוך תיק העבודות</Eyebrow>
             <Reveal delay={0.08}>
-              <h2 className="font-editorial text-[2.3rem] sm:text-[3.4rem] font-normal leading-[1.1] text-[#183f47] mt-4 mb-4">
-                בתים עם אופי. תכנון עם מחשבה.
+              <h2 className="text-[2.3rem] sm:text-[3.35rem] font-bold leading-[1.1] text-[#343735] mt-4 mb-4">
+                בתים עם אופי. <span className="text-[#396373]">תכנון עם מחשבה.</span>
               </h2>
-              <p className="text-[#5d6562] text-base sm:text-[1.12rem] leading-[1.82] m-0">
+              <p className="text-[#5c625f] text-base sm:text-[1.12rem] leading-[1.82] m-0">
                 מבחר חללים ופרטים מתוך פרויקטים שתכננתי ועיצבתי – מהתמונה הרחבה
                 ועד הפרטים הקטנים.
               </p>
@@ -68,18 +67,18 @@ export function PortfolioSection() {
           </div>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2.5 text-[#245d66] hover:text-[#183f47] font-bold border-b border-[#c9b8a4] pb-1.5 self-start md:self-end transition-colors group"
+            className="inline-flex items-center gap-2.5 text-[#396373] hover:text-[#1d3c47] font-bold border-b-2 border-[#C9BBA7] pb-1.5 self-start md:self-end transition-colors group"
           >
             <span>יש לכם פרויקט בראש?</span>
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
           </a>
         </div>
 
-        {/* Animated Category Filter Pills */}
+        {/* Category Filter Tabs */}
         <div
           role="tablist"
           aria-label="סינון תיק עבודות לפי חלל"
-          className="flex flex-wrap items-center gap-2 mb-9"
+          className="flex flex-wrap items-center gap-2 mb-10"
         >
           {GALLERY_CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
@@ -98,24 +97,24 @@ export function PortfolioSection() {
                   setActiveCategory(cat.id);
                   setLightboxIndex(null);
                 }}
-                className={`relative px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                className={`relative px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-colors cursor-pointer ${
                   isActive
-                    ? 'text-white'
-                    : 'text-[#183f47] bg-[#f5f1e9] hover:bg-[#e6ddd1]/80 border border-[#245d66]/10'
+                    ? 'text-[#FAF8F4]'
+                    : 'text-[#343735] bg-[#EAE4DA]/70 hover:bg-[#EAE4DA] border border-[#C9BBA7]/40'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="portfolio-filter-pill"
                     transition={{ type: 'spring', stiffness: 360, damping: 30 }}
-                    className="absolute inset-0 rounded-full bg-[#245d66] shadow-md"
+                    className="absolute inset-0 rounded-full bg-[#396373] shadow-md"
                   />
                 )}
                 <span className="relative z-10 inline-flex items-center gap-1.5">
                   <span>{cat.label}</span>
                   <span
                     className={`text-[0.72rem] ${
-                      isActive ? 'text-[#d8c3a5]' : 'text-[#6e9293]'
+                      isActive ? 'text-[#C9BBA7]' : 'text-[#396373]'
                     }`}
                   >
                     ({count})
@@ -126,10 +125,10 @@ export function PortfolioSection() {
           })}
         </div>
 
-        {/* Animated Curated Grid */}
+        {/* Editorial Curated Grid */}
         <motion.div
           layout
-          className="grid grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5"
+          className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5"
         >
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item, idx) => (
@@ -142,12 +141,12 @@ export function PortfolioSection() {
                 exit={{ opacity: 0, scale: 0.92 }}
                 transition={{
                   duration: 0.45,
-                  delay: Math.min(idx * 0.03, 0.25),
+                  delay: Math.min(idx * 0.03, 0.24),
                   ease: EASE_EDITORIAL,
                 }}
                 onClick={() => setLightboxIndex(idx)}
                 aria-label={`פתיחת תמונה בגודל מלא: ${item.alt}`}
-                className="group relative aspect-square rounded-2xl overflow-hidden bg-[#f1ede6] border border-[#245d66]/12 shadow-xs hover:shadow-[0_18px_45px_rgba(24,63,71,0.16)] transition-shadow duration-500 cursor-pointer text-right focus-visible:outline-3 focus-visible:outline-[#245d66]"
+                className="group relative aspect-square rounded-3xl overflow-hidden bg-[#EAE4DA] border border-[#C9BBA7]/40 shadow-xs hover:shadow-[0_22px_55px_rgba(29,60,71,0.18)] transition-all duration-500 cursor-pointer text-right"
               >
                 <img
                   src={item.src}
@@ -156,16 +155,16 @@ export function PortfolioSection() {
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
                 />
 
-                {/* Hover Architectural Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#102c32]/82 via-[#102c32]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-                  <div className="self-end w-9 h-9 rounded-full bg-white/90 text-[#183f47] flex items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-300 shadow-md">
+                {/* Frosted Cream Glass Slide-Up Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                  <div className="self-end w-10 h-10 rounded-full bg-[#FAF8F4]/92 text-[#396373] flex items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
                     <Expand className="w-4 h-4" />
                   </div>
-                  <div className="translate-y-3 group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="block text-white font-semibold text-sm sm:text-base leading-snug">
+                  <div className="bg-[#FAF8F4]/92 backdrop-blur-md rounded-2xl px-4 py-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+                    <span className="block text-[#343735] font-bold text-sm sm:text-base leading-snug">
                       {item.title}
                     </span>
-                    <span className="hidden sm:block text-white/75 text-xs mt-1 line-clamp-2">
+                    <span className="hidden sm:block text-[#5c625f] text-xs mt-0.5 line-clamp-1">
                       {item.alt}
                     </span>
                   </div>
@@ -179,7 +178,7 @@ export function PortfolioSection() {
         <BeforeAfterSection />
       </div>
 
-      {/* Premium Lightbox Modal */}
+      {/* Premium Lightbox */}
       <AnimatePresence>
         {currentLightboxItem && lightboxIndex !== null && (
           <motion.div
@@ -191,14 +190,13 @@ export function PortfolioSection() {
             aria-modal="true"
             aria-label="תצוגת תמונה מוגדלת"
             onClick={() => setLightboxIndex(null)}
-            className="fixed inset-0 z-[80] bg-[#0d2226]/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-8"
+            className="fixed inset-0 z-[80] bg-[#122931]/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-8"
           >
-            {/* Top Bar */}
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[1120px] flex items-center justify-between text-white/85 mb-4"
+              className="w-full max-w-[1120px] flex items-center justify-between text-[#FAF8F4]/90 mb-4"
             >
-              <span className="text-sm font-medium bg-white/10 px-3.5 py-1.5 rounded-full">
+              <span className="text-sm font-bold bg-white/10 px-4 py-1.5 rounded-full">
                 {lightboxIndex + 1} / {filteredItems.length}
               </span>
               <button
@@ -211,7 +209,6 @@ export function PortfolioSection() {
               </button>
             </div>
 
-            {/* Image Stage */}
             <div
               onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-[1120px] flex items-center justify-center"
@@ -241,13 +238,13 @@ export function PortfolioSection() {
                 <img
                   src={currentLightboxItem.src}
                   alt={currentLightboxItem.alt}
-                  className="max-w-full max-h-[72vh] object-contain rounded-xl shadow-[0_24px_80px_rgba(0,0,0,0.5)] bg-[#142d32]"
+                  className="max-w-full max-h-[72vh] object-contain rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.5)] bg-[#1d3c47]"
                 />
                 <div className="mt-4 text-center max-w-xl">
-                  <p className="text-white font-semibold text-base m-0">
+                  <p className="text-[#FAF8F4] font-bold text-base m-0">
                     {currentLightboxItem.title}
                   </p>
-                  <p className="text-white/70 text-sm mt-1 m-0">
+                  <p className="text-[#C9BBA7] text-sm mt-1 m-0">
                     {currentLightboxItem.alt}
                   </p>
                 </div>
@@ -265,7 +262,6 @@ export function PortfolioSection() {
               </button>
             </div>
 
-            {/* Mobile Nav Buttons */}
             <div
               onClick={(e) => e.stopPropagation()}
               className="flex sm:hidden items-center gap-4 mt-5"

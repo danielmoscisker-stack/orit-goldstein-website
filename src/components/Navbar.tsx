@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowLeft } from 'lucide-react';
 import { NAV_LINKS } from '../data/siteData';
 import { EASE_EDITORIAL } from './ArchitecturalReveal';
+import { OritBrandLogo } from './OritBrandLogo';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -11,7 +12,7 @@ export function Navbar() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 36);
+      setScrolled(window.scrollY > 28);
 
       const sectionIds = NAV_LINKS.map((l) => l.href.replace('#', ''));
       let current = '#top';
@@ -36,32 +37,28 @@ export function Navbar() {
     <header
       className={`sticky top-0 z-40 transition-all duration-500 ${
         scrolled
-          ? 'bg-[#183f47]/92 backdrop-blur-xl shadow-[0_12px_36px_rgba(14,40,46,0.22)] border-b border-white/10'
-          : 'bg-[#245d66] border-b border-white/15'
+          ? 'bg-[#FAF8F4]/92 backdrop-blur-xl shadow-[0_10px_36px_rgba(29,60,71,0.09)] border-b border-[#C9BBA7]/40'
+          : 'bg-[#FAF8F4]/95 backdrop-blur-md border-b border-[#EAE4DA]'
       }`}
     >
       <div
-        className={`max-w-[1220px] mx-auto px-5 sm:px-7 flex items-center justify-between gap-6 transition-all duration-500 ${
-          scrolled ? 'min-h-[74px]' : 'min-h-[92px]'
+        className={`max-w-[1260px] mx-auto px-5 sm:px-8 flex items-center justify-between gap-6 transition-all duration-500 ${
+          scrolled ? 'min-h-[76px]' : 'min-h-[94px]'
         }`}
       >
+        {/* Brand Board Signature Logo */}
         <a
           href="#top"
           aria-label="אורית גולדשטיין – לדף הבית"
-          className="flex items-center shrink-0 group"
+          className="flex items-center shrink-0 transition-transform duration-300 hover:scale-[1.02]"
         >
-          <img
-            src="./assets/site/logo-white.png"
-            alt="אורית גולדשטיין – אדריכלות ועיצוב פנים"
-            className={`object-contain object-right transition-all duration-500 group-hover:opacity-90 ${
-              scrolled ? 'w-[164px] h-[64px]' : 'w-[198px] h-[82px]'
-            }`}
-          />
+          <OritBrandLogo variant="dark" size="sm" showSubtitle={!scrolled} />
         </a>
 
+        {/* Airy Editorial Navigation */}
         <nav
           aria-label="ניווט ראשי"
-          className="hidden lg:flex items-center gap-1 text-[0.96rem] font-medium text-white/90"
+          className="hidden lg:flex items-center gap-1.5 text-[0.98rem] font-semibold text-[#343735]"
         >
           {NAV_LINKS.map((link) => {
             const isActive = activeHash === link.href;
@@ -71,14 +68,16 @@ export function Navbar() {
                 href={link.href}
                 onClick={() => setActiveHash(link.href)}
                 className={`relative px-4 py-2 rounded-full transition-colors duration-200 ${
-                  isActive ? 'text-white' : 'text-white/80 hover:text-white'
+                  isActive
+                    ? 'text-[#396373]'
+                    : 'text-[#343735]/80 hover:text-[#396373]'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="nav-active-pill"
-                    transition={{ type: 'spring', stiffness: 360, damping: 32 }}
-                    className="absolute inset-0 rounded-full bg-white/12 border border-white/15"
+                    transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                    className="absolute inset-0 rounded-full bg-[#EAE4DA]/85 border border-[#C9BBA7]/50"
                   />
                 )}
                 <span className="relative z-10">{link.label}</span>
@@ -87,12 +86,13 @@ export function Navbar() {
           })}
         </nav>
 
+        {/* Smoked Petrol Pill CTA + Mobile Toggle */}
         <div className="flex items-center gap-3">
           <a
             href="#contact"
-            className="hidden sm:inline-flex items-center gap-2.5 bg-[#f5f1e9] text-[#183f47] hover:bg-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
+            className="btn-shimmer hidden sm:inline-flex items-center gap-2.5 bg-[#396373] hover:bg-[#1d3c47] text-[#FAF8F4] font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 shadow-[0_8px_22px_rgba(57,99,115,0.24)] hover:shadow-[0_12px_28px_rgba(29,60,71,0.32)] hover:-translate-y-0.5 group"
           >
-            <span>בואו נדבר</span>
+            <span>יצירת קשר</span>
             <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
           </a>
 
@@ -101,13 +101,14 @@ export function Navbar() {
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={menuOpen ? 'סגירת תפריט' : 'פתיחת תפריט'}
             aria-expanded={menuOpen}
-            className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-full border border-white/30 text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-full border border-[#396373]/25 bg-[#EAE4DA]/50 text-[#1d3c47] hover:bg-[#EAE4DA] transition-colors cursor-pointer"
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
@@ -116,9 +117,9 @@ export function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.35, ease: EASE_EDITORIAL }}
             aria-label="ניווט מובייל"
-            className="lg:hidden overflow-hidden bg-[#14353c] border-t border-white/10"
+            className="lg:hidden overflow-hidden bg-[#FAF8F4] border-t border-[#EAE4DA] shadow-xl"
           >
-            <div className="px-6 py-6 flex flex-col gap-2">
+            <div className="px-6 py-6 flex flex-col gap-1.5">
               {NAV_LINKS.map((link, idx) => (
                 <motion.a
                   key={link.href}
@@ -127,10 +128,10 @@ export function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.3 }}
                   onClick={() => setMenuOpen(false)}
-                  className={`py-3 px-4 rounded-xl text-base font-medium transition-colors ${
+                  className={`py-3 px-4 rounded-xl text-base font-semibold transition-colors ${
                     activeHash === link.href
-                      ? 'bg-white/12 text-white'
-                      : 'text-white/85 hover:bg-white/8 hover:text-white'
+                      ? 'bg-[#EAE4DA] text-[#396373]'
+                      : 'text-[#343735] hover:bg-[#EAE4DA]/60'
                   }`}
                 >
                   {link.label}
@@ -139,7 +140,7 @@ export function Navbar() {
               <a
                 href="#contact"
                 onClick={() => setMenuOpen(false)}
-                className="mt-3 inline-flex items-center justify-center gap-2 bg-[#f5f1e9] text-[#183f47] font-bold py-3.5 px-5 rounded-xl"
+                className="mt-3 inline-flex items-center justify-center gap-2 bg-[#396373] text-[#FAF8F4] font-bold py-3.5 px-5 rounded-full shadow-md"
               >
                 <span>בואו נדבר על הבית שלכם</span>
                 <ArrowLeft className="w-4 h-4" />

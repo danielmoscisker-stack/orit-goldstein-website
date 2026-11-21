@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { MotionConfig } from 'framer-motion';
 import {
+  AmbientCursorGlow,
   ArchitecturalPreloader,
   ScrollProgressBar,
 } from './components/ArchitecturalReveal';
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { MaterialBoardSection } from './components/MaterialBoardSection';
 import {
   PhilosophySection,
   ProcessSection,
@@ -37,18 +39,20 @@ export function App() {
 
   return (
     <MotionConfig reducedMotion={stopAnimations ? 'always' : 'user'}>
-      <div className="min-h-screen bg-[#fbf9f5] text-[#292e2e]">
+      <div className="min-h-screen bg-[#FAF8F4] text-[#343735]">
         <AccessibilityWidget
           statementOpen={statementOpen}
           setStatementOpen={setStatementOpen}
           onStopAnimationsChange={setStopAnimations}
         />
         <ArchitecturalPreloader />
+        <AmbientCursorGlow />
         <ScrollProgressBar />
         <Navbar />
         <main id="main-content" tabIndex={-1} className="outline-none">
           <Hero />
           <ValueStrip />
+          <MaterialBoardSection />
           <PhilosophySection />
           <ServicesSection onSelectService={handleSelectService} />
           <PortfolioSection />
