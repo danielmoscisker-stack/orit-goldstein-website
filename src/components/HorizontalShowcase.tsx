@@ -57,49 +57,79 @@ export function HorizontalShowcase() {
               isRtl ? 'lg:pr-8' : 'lg:pl-8'
             }`}
           >
-            {t.horizontal.slides.map((slide, idx) => (
-              <motion.a
-                key={slide.num}
-                href="#portfolio"
-                onMouseEnter={() => setCursorLabel(t.horizontal.cursorLabel)}
-                onMouseLeave={() => setCursorLabel(null)}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, delay: idx * 0.08, ease: EASE_EDITORIAL }}
-                className="group relative w-[82vw] sm:w-[440px] lg:w-[480px] shrink-0 rounded-3xl overflow-hidden bg-[#1d3c47] border border-white/15 shadow-[0_28px_70px_rgba(0,0,0,0.38)]"
-              >
-                <div className="aspect-[16/11] overflow-hidden">
-                  {slide.src.includes('18-staircase') ? (
-                    <AnimatedDogStaircase
-                      alt={`${slide.title} – ${slide.subtitle}`}
-                      className="w-full h-full"
-                      imgClassName="w-full h-full object-cover object-[center_58%] transition-transform duration-700 ease-out group-hover:scale-106"
-                    />
-                  ) : (
-                    <img
-                      src={slide.src}
-                      alt={`${slide.title} – ${slide.subtitle}`}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                    />
-                  )}
-                </div>
-                <div className="p-6 flex items-start justify-between gap-4 bg-gradient-to-t from-[#122931] via-[#173540] to-[#1d3c47]">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#FAF8F4] m-0 mb-1 group-hover:text-[#C9BBA7] transition-colors">
-                      {slide.title}
-                    </h3>
-                    <p className="text-sm text-[#FAF8F4]/72 m-0 leading-relaxed">
-                      {slide.subtitle}
-                    </p>
+            {t.horizontal.slides.map((slide, idx) => {
+              const isDogSlide = slide.src.includes('18-staircase');
+              const cardClasses =
+                'group relative w-[82vw] sm:w-[440px] lg:w-[480px] shrink-0 rounded-3xl overflow-hidden bg-[#1d3c47] border border-white/15 shadow-[0_28px_70px_rgba(0,0,0,0.38)]';
+
+              const cardInner = (
+                <>
+                  <div className="aspect-[16/11] overflow-hidden">
+                    {isDogSlide ? (
+                      <AnimatedDogStaircase
+                        alt={`${slide.title} – ${slide.subtitle}`}
+                        className="w-full h-full"
+                        imgClassName="w-full h-full object-cover object-[center_58%] transition-transform duration-700 ease-out group-hover:scale-106"
+                        petOnImageClick
+                      />
+                    ) : (
+                      <img
+                        src={slide.src}
+                        alt={`${slide.title} – ${slide.subtitle}`}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                      />
+                    )}
                   </div>
-                  <span className="font-num text-3xl text-[#C9BBA7]/85 leading-none shrink-0">
-                    {slide.num}
-                  </span>
-                </div>
-              </motion.a>
-            ))}
+                  <div className="p-6 flex items-start justify-between gap-4 bg-gradient-to-t from-[#122931] via-[#173540] to-[#1d3c47]">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#FAF8F4] m-0 mb-1 group-hover:text-[#C9BBA7] transition-colors">
+                        {slide.title}
+                      </h3>
+                      <p className="text-sm text-[#FAF8F4]/72 m-0 leading-relaxed">
+                        {slide.subtitle}
+                      </p>
+                    </div>
+                    <span className="font-num text-3xl text-[#C9BBA7]/85 leading-none shrink-0">
+                      {slide.num}
+                    </span>
+                  </div>
+                </>
+              );
+
+              if (isDogSlide) {
+                return (
+                  <motion.div
+                    key={slide.num}
+                    onMouseEnter={() => setCursorLabel('🐾')}
+                    onMouseLeave={() => setCursorLabel(null)}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.7, delay: idx * 0.08, ease: EASE_EDITORIAL }}
+                    className={cardClasses}
+                  >
+                    {cardInner}
+                  </motion.div>
+                );
+              }
+
+              return (
+                <motion.a
+                  key={slide.num}
+                  href="#portfolio"
+                  onMouseEnter={() => setCursorLabel(t.horizontal.cursorLabel)}
+                  onMouseLeave={() => setCursorLabel(null)}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.7, delay: idx * 0.08, ease: EASE_EDITORIAL }}
+                  className={cardClasses}
+                >
+                  {cardInner}
+                </motion.a>
+              );
+            })}
           </motion.div>
         </div>
 

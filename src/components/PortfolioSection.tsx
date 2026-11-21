@@ -198,7 +198,7 @@ export function PortfolioSection() {
                     />
                   )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#122931]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
                     <div className="self-end w-10 h-10 rounded-full bg-[#FAF8F4]/92 text-[#396373] flex items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
                       <Expand className="w-4 h-4" />
                     </div>

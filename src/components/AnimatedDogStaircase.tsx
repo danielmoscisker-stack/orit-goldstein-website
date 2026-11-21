@@ -48,6 +48,7 @@ interface AnimatedDogStaircaseProps {
   imgClassName?: string;
   showBadge?: boolean;
   maskPreset?: 'cropped' | 'full';
+  petOnImageClick?: boolean;
 }
 
 export function AnimatedDogStaircase({
@@ -56,6 +57,7 @@ export function AnimatedDogStaircase({
   imgClassName = 'w-full h-full object-cover',
   showBadge = true,
   maskPreset = 'cropped',
+  petOnImageClick = false,
 }: AnimatedDogStaircaseProps) {
   const { lang } = useLanguage();
   const prefersReduced = useReducedMotion();
@@ -180,7 +182,8 @@ export function AnimatedDogStaircase({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden ${className}`}
+      onClick={petOnImageClick ? handlePetDog : undefined}
+      className={`relative overflow-hidden ${petOnImageClick ? 'cursor-pointer' : ''} ${className}`}
     >
       {/* Original crisp architectural photo */}
       <img
@@ -304,19 +307,38 @@ export function AnimatedDogStaircase({
         )}
       </AnimatePresence>
 
+      {/* Direct Clickable Hotspot Right Over the Dog (works even inside gallery tiles & lightbox!) */}
+      {!prefersReduced && !petOnImageClick && (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={handlePetDog}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') handlePetDog(e as unknown as React.MouseEvent);
+          }}
+          aria-label={copy.petBtn}
+          title={copy.petBtn}
+          className="absolute left-[12%] top-[52%] w-[34%] h-[42%] z-25 cursor-pointer rounded-full"
+        />
+      )}
+
       {/* Interactive "Pet Me 🐾" Pill Button */}
       {!prefersReduced && showBadge && (
-        <motion.button
-          type="button"
+        <motion.div
+          role="button"
+          tabIndex={0}
           onClick={handlePetDog}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') handlePetDog(e as unknown as React.MouseEvent);
+          }}
           whileHover={{ scale: 1.07 }}
           whileTap={{ scale: 0.93 }}
           aria-label={copy.petBtn}
-          className="absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 bg-[#FAF8F4]/92 hover:bg-white backdrop-blur-md text-[#1d3c47] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-[0_8px_24px_rgba(18,41,49,0.28)] border border-[#C9BBA7]/75 cursor-pointer transition-colors"
+          className="absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 bg-[#FAF8F4]/95 hover:bg-white backdrop-blur-md text-[#1d3c47] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-[0_8px_24px_rgba(18,41,49,0.28)] border border-[#C9BBA7]/75 cursor-pointer transition-colors select-none"
         >
           <span>🐾</span>
           <span>{mood === 'architect' ? copy.chiefBtn : copy.petBtn}</span>
-        </motion.button>
+        </motion.div>
       )}
     </div>
   );
