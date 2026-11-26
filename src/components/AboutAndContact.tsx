@@ -16,6 +16,7 @@ import { CONTACT_INFO } from '../data/siteData';
 import { Eyebrow, Reveal, EASE_EDITORIAL } from './ArchitecturalReveal';
 import { OritBrandLogo } from './OritBrandLogo';
 import { useLanguage } from '../i18n/LanguageContext';
+import { trackEvent } from '../utils/analytics';
 
 export function AboutSection() {
   const { t, isRtl } = useLanguage();
@@ -278,6 +279,7 @@ export function ContactSection({
             <div className="space-y-3.5">
               <a
                 href={`mailto:${CONTACT_INFO.email}`}
+                onClick={() => trackEvent('email_click', CONTACT_INFO.email)}
                 className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 transition-all duration-300 group"
               >
                 <span className="w-11 h-11 rounded-xl bg-white/10 text-[#C9BBA7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -293,6 +295,7 @@ export function ContactSection({
 
               <a
                 href={CONTACT_INFO.phoneHref}
+                onClick={() => trackEvent('phone_click', CONTACT_INFO.phoneDisplay)}
                 className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 transition-all duration-300 group"
               >
                 <span className="w-11 h-11 rounded-xl bg-white/10 text-[#C9BBA7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -310,6 +313,7 @@ export function ContactSection({
                 href={CONTACT_INFO.whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('whatsapp_click', 'contact_section')}
                 className="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366]/18 hover:bg-[#25D366]/28 border border-[#25D366]/35 transition-all duration-300 group"
               >
                 <span className="w-11 h-11 rounded-xl bg-[#25D366]/25 text-[#9af0b9] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -372,6 +376,9 @@ export function ContactSection({
             <form
               action={CONTACT_INFO.formAction}
               method="POST"
+              onSubmit={() =>
+                trackEvent('form_submit', selectedService || 'general_inquiry', '', true)
+              }
               className="grid grid-cols-1 sm:grid-cols-2 gap-4"
             >
               <input
@@ -529,6 +536,7 @@ export function FloatingWhatsApp() {
       href={CONTACT_INFO.whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackEvent('whatsapp_click', 'floating_button')}
       aria-label="WhatsApp"
       initial={{ opacity: 0, scale: 0.7, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}

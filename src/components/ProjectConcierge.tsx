@@ -14,6 +14,7 @@ import {
 import { Eyebrow, EASE_EDITORIAL } from './ArchitecturalReveal';
 import { useLanguage } from '../i18n/LanguageContext';
 import { CONTACT_INFO } from '../data/siteData';
+import { trackEvent } from '../utils/analytics';
 
 const QUIZ_COPY = {
   he: {
@@ -329,11 +330,11 @@ export function ProjectConcierge({
                     <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="button"
-                        onClick={() =>
-                          onSelectRecommendation(
-                            `${track.title} (${answers.map((a) => a.label).join(' · ')})`
-                          )
-                        }
+                        onClick={() => {
+                          const summary = `${track.title} (${answers.map((a) => a.label).join(' · ')})`;
+                          trackEvent('concierge_complete', track.title, summary);
+                          onSelectRecommendation(summary);
+                        }}
                         className="btn-shimmer inline-flex items-center gap-2.5 bg-[#FAF8F4] hover:bg-white text-[#1d3c47] font-bold px-6 py-3.5 rounded-full shadow-md cursor-pointer transition-all"
                       >
                         <span>{copy.ctaForm}</span>
@@ -344,6 +345,13 @@ export function ProjectConcierge({
                         href={waHref}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() =>
+                          trackEvent(
+                            'whatsapp_click',
+                            `concierge:${track.title}`,
+                            answers.map((a) => a.label).join(' · ')
+                          )
+                        }
                         className="inline-flex items-center gap-2 bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/45 text-white font-bold px-6 py-3.5 rounded-full transition-colors"
                       >
                         <MessageCircle className="w-4 h-4 text-[#9af0b9]" />
