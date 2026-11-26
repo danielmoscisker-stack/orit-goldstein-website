@@ -17,10 +17,13 @@ import {
   Check,
   TrendingUp,
   ArrowRight,
+  ArrowLeft,
   Sparkles,
 } from 'lucide-react';
 import { OritBrandLogo } from './OritBrandLogo';
 import { readLocalFallbackData } from '../utils/analytics';
+import { useLanguage } from '../i18n/LanguageContext';
+import { Lang } from '../i18n/translations';
 
 interface InsightsResponse {
   ok: boolean;
@@ -60,6 +63,180 @@ interface InsightsResponse {
     device: string;
   }[];
 }
+
+const VAULT_COPY = {
+  he: {
+    loginTitle: 'כספת נתוני הסטודיו',
+    loginSub: 'גישה פרטית לסטטיסטיקות תנועה, חיפושים ופניות',
+    codePlaceholder: 'הזינו קוד גישה...',
+    verifying: 'מאמת...',
+    unlockBtn: 'פתיחת לוח הנתונים',
+    backHome: 'חזרה לאתר הראשי',
+    wrongCode: 'קוד גישה שגוי',
+    connErr: 'שגיאת חיבור לשרת',
+    headerTitle: 'לוח בקרה וניתוח תנועה',
+    headerSub: 'נתוני אמת · מקורות הגעה · מילות חיפוש · המרות',
+    localMode: 'מצב מקומי',
+    daysLabel: (d: number) => `${d} ימים`,
+    refresh: 'רענון',
+    lock: 'נעילה',
+    kpiTotal: (d: number) => `סה״כ ביקורים (${d} ימים)`,
+    kpiUnique: 'מבקרים ייחודיים',
+    kpi24h: 'ביקורים ב-24 השעות האחרונות',
+    kpiEvents: 'אינטראקציות והמרות',
+    dailyTrend: 'מגמת ביקורים יומית',
+    activeDays: (n: number) => `${n} ימים פעילים`,
+    noDaily: 'עדיין אין ביקורים בטווח התאריכים שנבחר.',
+    sourcesTitle: 'איך אנשים מגיעים לאתר (מקורות)',
+    noSources: 'אין נתוני מקורות עדיין',
+    searchTitle: 'מה חיפשו (מילות חיפוש ו-UTM Term)',
+    noSearch: 'מילות חיפוש יופיעו כאן ממנועי חיפוש, קמפיינים ממומנים (Google Ads) וקישורים מתויגים.',
+    referrersTitle: 'אתרים מפנים (Referrers)',
+    noReferrers: 'עדיין אין הפניות מאתרים חיצוניים',
+    geoTitle: 'ערים ומדינות (Cloudflare Geo)',
+    noGeo: 'אין נתוני מיקום עדיין',
+    devicesTitle: 'מכשירים, דפדפנים ושפות',
+    noDevices: 'אין נתוני מכשירים',
+    langHeading: 'שפת גלישה',
+    noLangs: 'אין נתוני שפות',
+    sectionsTitle: 'אילו אזורים באתר הכי מעניינים',
+    noSections: 'אין נתוני גלילה ואינטראקציות עדיין',
+    convTitle: 'פעולות בעלות כוונת פנייה גבוהה (WhatsApp, טלפון, טופס, שאלון התאמה)',
+    noConv: 'כאשר מבקרים ילחצו על וואטסאפ, טלפון, אימייל, בחירת מסלול או שאלון ההתאמה – הפעולות יופיעו כאן בזמן אמת.',
+    colTime: 'זמן (UTC)',
+    colAction: 'סוג פעולה',
+    colDetail: 'פירוט',
+    colLang: 'שפה',
+    colDeviceCountry: 'מכשיר / מדינה',
+    recentTitle: 'מבקרים אחרונים באתר (30 אחרונים)',
+    noRecent: 'עדיין אין ביקורים רשומים.',
+    colSource: 'מקור הגעה',
+    colQuery: 'מילת חיפוש / קמפיין',
+    colLocation: 'מיקום',
+    colDeviceBrowser: 'מכשיר ודפדפן',
+    utmTitle: 'מחולל קישורים למעקב קמפיינים (Instagram / Facebook / Google Ads)',
+    utmSub: 'צרו קישור מתויג לשיתוף בפוסטים או מודעות כדי לראות בדיוק מאיזה פרסום ומילת חיפוש הגיעו הלקוחות.',
+    utmSourcePh: 'מקור (instagram / google / whatsapp)',
+    utmCampPh: 'שם קמפיין (kitchen-design)',
+    utmTermPh: 'מילת חיפוש / נושא (עיצוב מטבח)',
+    copyLink: 'העתקת קישור',
+    copied: 'הועתק!',
+  },
+  en: {
+    loginTitle: 'Studio Analytics Vault',
+    loginSub: 'Private access to traffic, search queries & lead insights',
+    codePlaceholder: 'Enter access code...',
+    verifying: 'Verifying...',
+    unlockBtn: 'Unlock Dashboard',
+    backHome: 'Back to main website',
+    wrongCode: 'Invalid access code',
+    connErr: 'Connection error',
+    headerTitle: 'Traffic & Insights Dashboard',
+    headerSub: 'Real-time visitors · Traffic sources · Search terms · Conversions',
+    localMode: 'Local Mode',
+    daysLabel: (d: number) => `${d} Days`,
+    refresh: 'Refresh',
+    lock: 'Lock',
+    kpiTotal: (d: number) => `Total Visits (${d}d)`,
+    kpiUnique: 'Unique Visitors',
+    kpi24h: 'Last 24 Hours',
+    kpiEvents: 'Interactions & Leads',
+    dailyTrend: 'Daily Traffic Trend',
+    activeDays: (n: number) => `${n} active days`,
+    noDaily: 'No visits recorded in this date range yet.',
+    sourcesTitle: 'How People Find the Site (Sources)',
+    noSources: 'No traffic source data yet',
+    searchTitle: 'What People Searched (Queries & UTM Terms)',
+    noSearch: 'Search keywords will appear here from search referrers, Google Ads, and tagged campaign links.',
+    referrersTitle: 'Referring Websites',
+    noReferrers: 'No external referrals yet',
+    geoTitle: 'Cities & Countries (Cloudflare Geo)',
+    noGeo: 'No location data yet',
+    devicesTitle: 'Devices, Browsers & Languages',
+    noDevices: 'No device data yet',
+    langHeading: 'Browsing Language',
+    noLangs: 'No language data yet',
+    sectionsTitle: 'Most Viewed Sections',
+    noSections: 'No scroll or interaction data yet',
+    convTitle: 'High-Intent Lead Actions (WhatsApp, Phone, Form, Quiz)',
+    noConv: 'When visitors click WhatsApp, phone, email, select a service, or finish the project matcher, their actions appear here in real time.',
+    colTime: 'Time (UTC)',
+    colAction: 'Action Type',
+    colDetail: 'Details',
+    colLang: 'Lang',
+    colDeviceCountry: 'Device / Country',
+    recentTitle: 'Recent Visitors (Last 30)',
+    noRecent: 'No visitors recorded yet.',
+    colSource: 'Traffic Source',
+    colQuery: 'Search Query / Campaign',
+    colLocation: 'Location',
+    colDeviceBrowser: 'Device & Browser',
+    utmTitle: 'Campaign & Search Link Builder (Instagram / Facebook / Google Ads)',
+    utmSub: 'Generate a tracked link for social posts or ads to see the exact campaign and keyword each client came from.',
+    utmSourcePh: 'Source (instagram / google / whatsapp)',
+    utmCampPh: 'Campaign name (kitchen-design)',
+    utmTermPh: 'Search keyword / topic (kitchen renovation)',
+    copyLink: 'Copy Link',
+    copied: 'Copied!',
+  },
+  es: {
+    loginTitle: 'Bóveda de Analíticas',
+    loginSub: 'Acceso privado a estadísticas de tráfico, búsquedas y consultas',
+    codePlaceholder: 'Introduce el código...',
+    verifying: 'Verificando...',
+    unlockBtn: 'Abrir Panel',
+    backHome: 'Volver al sitio principal',
+    wrongCode: 'Código de acceso incorrecto',
+    connErr: 'Error de conexión',
+    headerTitle: 'Panel de Tráfico y Análisis',
+    headerSub: 'Visitantes en tiempo real · Fuentes · Búsquedas · Conversiones',
+    localMode: 'Modo Local',
+    daysLabel: (d: number) => `${d} Días`,
+    refresh: 'Actualizar',
+    lock: 'Bloquear',
+    kpiTotal: (d: number) => `Visitas Totales (${d}d)`,
+    kpiUnique: 'Visitantes Únicos',
+    kpi24h: 'Últimas 24 Horas',
+    kpiEvents: 'Interacciones y Leads',
+    dailyTrend: 'Tendencia Diaria de Visitas',
+    activeDays: (n: number) => `${n} días activos`,
+    noDaily: 'Aún no hay visitas registradas en este período.',
+    sourcesTitle: 'Cómo Llegan los Visitantes (Fuentes)',
+    noSources: 'Aún no hay datos de fuentes',
+    searchTitle: 'Qué Buscaron (Términos y UTM)',
+    noSearch: 'Las palabras clave aparecerán aquí desde buscadores, Google Ads y enlaces etiquetados.',
+    referrersTitle: 'Sitios de Referencia',
+    noReferrers: 'Aún no hay referencias externas',
+    geoTitle: 'Ciudades y Países (Cloudflare Geo)',
+    noGeo: 'Aún no hay datos de ubicación',
+    devicesTitle: 'Dispositivos, Navegadores e Idiomas',
+    noDevices: 'Sin datos de dispositivos',
+    langHeading: 'Idioma de Navegación',
+    noLangs: 'Sin datos de idioma',
+    sectionsTitle: 'Secciones Más Vistas',
+    noSections: 'Sin datos de desplazamiento aún',
+    convTitle: 'Acciones de Alta Intención (WhatsApp, Teléfono, Formulario, Quiz)',
+    noConv: 'Cuando los visitantes hagan clic en WhatsApp, teléfono, correo o completen el cuestionario, aparecerán aquí.',
+    colTime: 'Hora (UTC)',
+    colAction: 'Acción',
+    colDetail: 'Detalle',
+    colLang: 'Idioma',
+    colDeviceCountry: 'Dispositivo / País',
+    recentTitle: 'Visitantes Recientes (Últimos 30)',
+    noRecent: 'Aún no hay visitantes registrados.',
+    colSource: 'Fuente',
+    colQuery: 'Búsqueda / Campaña',
+    colLocation: 'Ubicación',
+    colDeviceBrowser: 'Dispositivo y Navegador',
+    utmTitle: 'Generador de Enlaces de Campaña (Instagram / Facebook / Google Ads)',
+    utmSub: 'Crea un enlace etiquetado para publicaciones o anuncios y descubre exactamente de dónde llega cada cliente.',
+    utmSourcePh: 'Fuente (instagram / google / whatsapp)',
+    utmCampPh: 'Campaña (kitchen-design)',
+    utmTermPh: 'Palabra clave / tema',
+    copyLink: 'Copiar Enlace',
+    copied: '¡Copiado!',
+  },
+};
 
 const VAULT_SESSION_KEY = 'orit_vault_code_v1';
 
@@ -104,7 +281,7 @@ function aggregateLocalFallback(days: number): InsightsResponse {
     referrers: countBy(visits.filter((v) => v.referrer), 'referrer'),
     searchTerms: Object.entries(searchTerms).map(([term, count]) => ({ term, count })),
     campaigns: [],
-    countries: [{ name: 'Local Preview', count: visits.length }],
+    countries: [{ name: 'Local Browser', count: visits.length }],
     cities: [],
     devices: countBy(visits, 'device'),
     browsers: countBy(visits, 'browser'),
@@ -121,7 +298,7 @@ function aggregateLocalFallback(days: number): InsightsResponse {
       search_query: v.searchQuery || '',
       utm_campaign: v.utmCampaign || '',
       country: 'Local',
-      city: 'Dev',
+      city: 'Browser',
       device: v.device || 'Desktop',
       browser: v.browser || '',
       lang: v.lang || 'he',
@@ -181,7 +358,56 @@ function BarList({
   );
 }
 
+function VaultLangSwitch({
+  lang,
+  setLang,
+  dark = true,
+}: {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  dark?: boolean;
+}) {
+  const opts: { code: Lang; label: string }[] = [
+    { code: 'he', label: 'עב' },
+    { code: 'en', label: 'EN' },
+    { code: 'es', label: 'ES' },
+  ];
+  return (
+    <div
+      dir="ltr"
+      className={`inline-flex items-center p-1 rounded-full text-xs font-bold border ${
+        dark
+          ? 'bg-white/10 border-white/15'
+          : 'bg-[#EAE4DA] border-[#C9BBA7]/60'
+      }`}
+    >
+      {opts.map((o) => (
+        <button
+          key={o.code}
+          type="button"
+          onClick={() => setLang(o.code)}
+          className={`px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
+            lang === o.code
+              ? dark
+                ? 'bg-[#C9BBA7] text-[#122931]'
+                : 'bg-[#396373] text-[#FAF8F4]'
+              : dark
+              ? 'text-white/80 hover:text-white'
+              : 'text-[#343735]/80 hover:text-[#396373]'
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function StudioVaultPage() {
+  const { lang, setLang, isRtl } = useLanguage();
+  const c = VAULT_COPY[lang];
+  const BackArrow = isRtl ? ArrowRight : ArrowLeft;
+
   const [codeInput, setCodeInput] = useState('');
   const [authCode, setAuthCode] = useState<string>(() => {
     try {
@@ -196,13 +422,11 @@ export function StudioVaultPage() {
   const [data, setData] = useState<InsightsResponse | null>(null);
   const [isLocalFallback, setIsLocalFallback] = useState(false);
 
-  // Built-in UTM Link Builder for Orit's Ads & Social Posts
   const [utmSource, setUtmSource] = useState('instagram');
   const [utmCampaign, setUtmCampaign] = useState('portfolio-2026');
   const [utmTerm, setUtmTerm] = useState('');
   const [copiedUtm, setCopiedUtm] = useState(false);
 
-  // Inject noindex meta so search engines never index the vault
   useEffect(() => {
     const meta = document.createElement('meta');
     meta.name = 'robots';
@@ -223,7 +447,7 @@ export function StudioVaultPage() {
       });
 
       if (res.status === 401) {
-        setError('קוד גישה שגוי / Invalid access code');
+        setError(c.wrongCode);
         setAuthCode('');
         sessionStorage.removeItem(VAULT_SESSION_KEY);
         setData(null);
@@ -233,14 +457,13 @@ export function StudioVaultPage() {
 
       const contentType = res.headers.get('content-type') || '';
       if (!res.ok || !contentType.includes('application/json')) {
-        // Local Vite dev server has no /api/insights — validate local passcode and show local preview data
         if (code === 'ORIT-2026-VAULT') {
           setIsLocalFallback(true);
           setData(aggregateLocalFallback(rangeDays));
           sessionStorage.setItem(VAULT_SESSION_KEY, code);
           setAuthCode(code);
         } else {
-          setError('קוד גישה שגוי / Invalid access code');
+          setError(c.wrongCode);
         }
         setLoading(false);
         return;
@@ -258,7 +481,7 @@ export function StudioVaultPage() {
         sessionStorage.setItem(VAULT_SESSION_KEY, code);
         setAuthCode(code);
       } else {
-        setError('שגיאת חיבור לשרת / Connection error');
+        setError(c.connErr);
       }
     } finally {
       setLoading(false);
@@ -293,11 +516,10 @@ export function StudioVaultPage() {
     return `${base}?${p.toString()}`;
   })();
 
-  // Passcode Gate Screen
   if (!authCode || !data) {
     return (
       <div
-        dir="rtl"
+        dir={isRtl ? 'rtl' : 'ltr'}
         className="min-h-screen bg-gradient-to-br from-[#122931] via-[#1d3c47] to-[#396373] flex items-center justify-center p-5"
       >
         <motion.div
@@ -305,6 +527,9 @@ export function StudioVaultPage() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           className="w-full max-w-[420px] bg-[#FAF8F4] rounded-3xl p-8 shadow-2xl border border-white/25 text-center"
         >
+          <div className="flex justify-end mb-3">
+            <VaultLangSwitch lang={lang} setLang={setLang} dark={false} />
+          </div>
           <div className="mb-5 flex justify-center">
             <OritBrandLogo variant="dark" size="sm" showSubtitle={false} />
           </div>
@@ -312,11 +537,9 @@ export function StudioVaultPage() {
             <Lock className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold text-[#343735] mb-1">
-            כספת נתוני הסטודיו
+            {c.loginTitle}
           </h1>
-          <p className="text-sm text-[#626764] mb-6">
-            גישה פרטית לסטטיסטיקות תנועה, חיפושים ופניות
-          </p>
+          <p className="text-sm text-[#626764] mb-6">{c.loginSub}</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <input
@@ -324,7 +547,7 @@ export function StudioVaultPage() {
               dir="ltr"
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
-              placeholder="הזינו קוד גישה..."
+              placeholder={c.codePlaceholder}
               autoFocus
               className="w-full text-center tracking-widest rounded-xl border border-[#C9BBA7] bg-white px-4 py-3.5 text-base font-bold text-[#343735] outline-none focus:border-[#396373] focus:ring-3 focus:ring-[#396373]/15"
             />
@@ -336,7 +559,7 @@ export function StudioVaultPage() {
               disabled={loading}
               className="w-full bg-[#396373] hover:bg-[#1d3c47] disabled:opacity-50 text-[#FAF8F4] font-bold py-3.5 rounded-full shadow-md transition-colors cursor-pointer"
             >
-              {loading ? 'מאמת...' : 'פתיחת לוח הנתונים'}
+              {loading ? c.verifying : c.unlockBtn}
             </button>
           </form>
 
@@ -344,8 +567,8 @@ export function StudioVaultPage() {
             href="/"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-[#396373] hover:underline mt-6"
           >
-            <ArrowRight className="w-3.5 h-3.5" />
-            <span>חזרה לאתר הראשי</span>
+            <BackArrow className="w-3.5 h-3.5" />
+            <span>{c.backHome}</span>
           </a>
         </motion.div>
       </div>
@@ -355,29 +578,27 @@ export function StudioVaultPage() {
   const maxDaily = Math.max(...data.dailyVisits.map((d) => d.visits), 1);
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#FAF8F4] text-[#343735] pb-16">
-      {/* Top Studio Vault Header */}
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[#FAF8F4] text-[#343735] pb-16">
       <header className="sticky top-0 z-30 bg-[#122931] text-[#FAF8F4] border-b border-white/10 shadow-lg">
         <div className="max-w-[1320px] mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <OritBrandLogo variant="light" size="sm" showSubtitle={false} />
             <div>
               <h1 className="text-lg font-bold m-0 flex items-center gap-2">
-                <span>לוח בקרה וניתוח תנועה</span>
+                <span>{c.headerTitle}</span>
                 {isLocalFallback && (
                   <span className="text-[11px] bg-[#C9BBA7] text-[#122931] px-2 py-0.5 rounded-full">
-                    מצב מקומי
+                    {c.localMode}
                   </span>
                 )}
               </h1>
-              <p className="text-xs text-[#C9BBA7] m-0">
-                נתוני אמת · מקורות הגעה · מילות חיפוש · המרות
-              </p>
+              <p className="text-xs text-[#C9BBA7] m-0">{c.headerSub}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Time Range Pills */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <VaultLangSwitch lang={lang} setLang={setLang} dark />
+
             <div className="inline-flex p-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold">
               {[7, 30, 90].map((d) => (
                 <button
@@ -388,7 +609,7 @@ export function StudioVaultPage() {
                     days === d ? 'bg-[#C9BBA7] text-[#122931]' : 'text-white/80 hover:text-white'
                   }`}
                 >
-                  {d} ימים
+                  {c.daysLabel(d)}
                 </button>
               ))}
             </div>
@@ -400,7 +621,7 @@ export function StudioVaultPage() {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">רענון</span>
+              <span className="hidden sm:inline">{c.refresh}</span>
             </button>
 
             <button
@@ -409,7 +630,7 @@ export function StudioVaultPage() {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-red-500/20 hover:bg-red-500/35 text-red-100 text-xs font-bold cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">נעילה</span>
+              <span className="hidden sm:inline">{c.lock}</span>
             </button>
           </div>
         </div>
@@ -419,23 +640,11 @@ export function StudioVaultPage() {
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
+            { label: c.kpiTotal(days), value: data.totals.totalVisits ?? 0, icon: Eye },
+            { label: c.kpiUnique, value: data.totals.uniqueVisitors ?? 0, icon: Users },
+            { label: c.kpi24h, value: data.totals.last24h ?? 0, icon: Clock },
             {
-              label: `סה״כ ביקורים (${days} ימים)`,
-              value: data.totals.totalVisits ?? 0,
-              icon: Eye,
-            },
-            {
-              label: 'מבקרים ייחודיים',
-              value: data.totals.uniqueVisitors ?? 0,
-              icon: Users,
-            },
-            {
-              label: 'ביקורים ב-24 השעות האחרונות',
-              value: data.totals.last24h ?? 0,
-              icon: Clock,
-            },
-            {
-              label: 'אינטראקציות והמרות',
+              label: c.kpiEvents,
               value: data.eventsSummary.reduce((a, b) => a + b.count, 0),
               icon: MousePointerClick,
             },
@@ -463,16 +672,14 @@ export function StudioVaultPage() {
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-[#343735] m-0 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#396373]" />
-              <span>מגמת ביקורים יומית</span>
+              <span>{c.dailyTrend}</span>
             </h2>
             <span className="text-xs text-[#626764]">
-              {data.dailyVisits.length} ימים פעילים
+              {c.activeDays(data.dailyVisits.length)}
             </span>
           </div>
           {data.dailyVisits.length === 0 ? (
-            <p className="text-sm text-[#626764] text-center py-8 m-0">
-              עדיין אין ביקורים בטווח התאריכים שנבחר.
-            </p>
+            <p className="text-sm text-[#626764] text-center py-8 m-0">{c.noDaily}</p>
           ) : (
             <div className="flex items-end gap-2 h-44 overflow-x-auto pb-2" dir="ltr">
               {data.dailyVisits.map((d) => (
@@ -501,31 +708,28 @@ export function StudioVaultPage() {
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <Globe className="w-4 h-4 text-[#396373]" />
-              <span>איך אנשים מגיעים לאתר (מקורות)</span>
+              <span>{c.sourcesTitle}</span>
             </h2>
-            <BarList items={data.sources} emptyText="אין נתוני מקורות עדיין" />
+            <BarList items={data.sources} emptyText={c.noSources} />
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <Search className="w-4 h-4 text-[#396373]" />
-              <span>מה חיפשו (מילות חיפוש ו-UTM Term)</span>
+              <span>{c.searchTitle}</span>
             </h2>
             <BarList
               items={data.searchTerms.map((s) => ({ name: s.term, count: s.count }))}
-              emptyText="מילות חיפוש יופיעו כאן ממנועי חיפוש, קמפיינים ממומנים (Google Ads) וקישורים מתויגים."
+              emptyText={c.noSearch}
             />
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <Link2 className="w-4 h-4 text-[#396373]" />
-              <span>אתרים מפנים (Referrers)</span>
+              <span>{c.referrersTitle}</span>
             </h2>
-            <BarList
-              items={data.referrers}
-              emptyText="עדיין אין הפניות מאתרים חיצוניים"
-            />
+            <BarList items={data.referrers} emptyText={c.noReferrers} />
           </div>
         </div>
 
@@ -534,26 +738,26 @@ export function StudioVaultPage() {
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-[#396373]" />
-              <span>ערים ומדינות (Cloudflare Geo)</span>
+              <span>{c.geoTitle}</span>
             </h2>
             <BarList
               items={data.cities.length ? data.cities : data.countries}
-              emptyText="אין נתוני מיקום עדיין"
+              emptyText={c.noGeo}
             />
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <Smartphone className="w-4 h-4 text-[#396373]" />
-              <span>מכשירים, דפדפנים ושפות</span>
+              <span>{c.devicesTitle}</span>
             </h2>
             <div className="space-y-5">
-              <BarList items={data.devices} emptyText="אין נתוני מכשירים" />
+              <BarList items={data.devices} emptyText={c.noDevices} />
               <div className="pt-4 border-t border-[#EAE4DA]">
                 <span className="block text-xs font-bold text-[#626764] mb-2">
-                  שפת גלישה
+                  {c.langHeading}
                 </span>
-                <BarList items={data.languages} emptyText="אין נתוני שפות" />
+                <BarList items={data.languages} emptyText={c.noLangs} />
               </div>
             </div>
           </div>
@@ -561,7 +765,7 @@ export function StudioVaultPage() {
           <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
             <h2 className="text-base font-bold text-[#343735] mb-4 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#396373]" />
-              <span>אילו אזורים באתר הכי מעניינים</span>
+              <span>{c.sectionsTitle}</span>
             </h2>
             <BarList
               items={
@@ -569,30 +773,26 @@ export function StudioVaultPage() {
                   ? data.topSections
                   : data.eventsSummary.map((e) => ({ name: e.type, count: e.count }))
               }
-              emptyText="אין נתוני גלילה ואינטראקציות עדיין"
+              emptyText={c.noSections}
             />
           </div>
         </div>
 
-        {/* High-Intent Conversions & Leads Activity */}
+        {/* High-Intent Conversions */}
         <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
-          <h2 className="text-base font-bold text-[#343735] mb-4">
-            פעולות בעלות כוונת פנייה גבוהה (WhatsApp, טלפון, טופס, שאלון התאמה)
-          </h2>
+          <h2 className="text-base font-bold text-[#343735] mb-4">{c.convTitle}</h2>
           {data.recentConversions.length === 0 ? (
-            <p className="text-sm text-[#626764] py-4 text-center m-0">
-              כאשר מבקרים ילחצו על וואטסאפ, טלפון, אימייל, בחירת מסלול או שאלון ההתאמה – הפעולות יופיעו כאן בזמן אמת.
-            </p>
+            <p className="text-sm text-[#626764] py-4 text-center m-0">{c.noConv}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-xs sm:text-sm text-right border-collapse">
+              <table className="w-full text-xs sm:text-sm text-start border-collapse">
                 <thead>
                   <tr className="border-b border-[#EAE4DA] text-[#626764]">
-                    <th className="py-2.5 px-3">זמן (UTC)</th>
-                    <th className="py-2.5 px-3">סוג פעולה</th>
-                    <th className="py-2.5 px-3">פירוט</th>
-                    <th className="py-2.5 px-3">שפה</th>
-                    <th className="py-2.5 px-3">מכשיר / מדינה</th>
+                    <th className="py-2.5 px-3 text-start">{c.colTime}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colAction}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colDetail}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colLang}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colDeviceCountry}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#EAE4DA]/70">
@@ -609,9 +809,7 @@ export function StudioVaultPage() {
                       <td className="py-2.5 px-3 font-medium">
                         {ev.event_label || ev.event_meta || '—'}
                       </td>
-                      <td className="py-2.5 px-3 uppercase font-bold text-xs">
-                        {ev.lang}
-                      </td>
+                      <td className="py-2.5 px-3 uppercase font-bold text-xs">{ev.lang}</td>
                       <td className="py-2.5 px-3 text-[#626764]">
                         {ev.device} · {ev.country}
                       </td>
@@ -623,26 +821,22 @@ export function StudioVaultPage() {
           )}
         </div>
 
-        {/* Recent Live Visitors Log */}
+        {/* Recent Visitors */}
         <div className="bg-white rounded-2xl p-6 border border-[#C9BBA7]/50 shadow-xs">
-          <h2 className="text-base font-bold text-[#343735] mb-4">
-            מבקרים אחרונים באתר (30 אחרונים)
-          </h2>
+          <h2 className="text-base font-bold text-[#343735] mb-4">{c.recentTitle}</h2>
           {data.recentVisits.length === 0 ? (
-            <p className="text-sm text-[#626764] py-4 text-center m-0">
-              עדיין אין ביקורים רשומים.
-            </p>
+            <p className="text-sm text-[#626764] py-4 text-center m-0">{c.noRecent}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-xs sm:text-sm text-right border-collapse">
+              <table className="w-full text-xs sm:text-sm text-start border-collapse">
                 <thead>
                   <tr className="border-b border-[#EAE4DA] text-[#626764]">
-                    <th className="py-2.5 px-3">זמן (UTC)</th>
-                    <th className="py-2.5 px-3">מקור הגעה</th>
-                    <th className="py-2.5 px-3">מילת חיפוש / קמפיין</th>
-                    <th className="py-2.5 px-3">מיקום</th>
-                    <th className="py-2.5 px-3">מכשיר ודפדפן</th>
-                    <th className="py-2.5 px-3">שפה</th>
+                    <th className="py-2.5 px-3 text-start">{c.colTime}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colSource}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colQuery}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colLocation}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colDeviceBrowser}</th>
+                    <th className="py-2.5 px-3 text-start">{c.colLang}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#EAE4DA]/70">
@@ -664,9 +858,7 @@ export function StudioVaultPage() {
                       <td className="py-2.5 px-3 text-[#626764]">
                         {v.device} · {v.browser}
                       </td>
-                      <td className="py-2.5 px-3 uppercase font-bold text-xs">
-                        {v.lang}
-                      </td>
+                      <td className="py-2.5 px-3 uppercase font-bold text-xs">{v.lang}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -675,34 +867,30 @@ export function StudioVaultPage() {
           )}
         </div>
 
-        {/* Built-In Campaign & Search Link Builder (UTM Generator) */}
+        {/* Built-In UTM Link Builder */}
         <div className="bg-[#1d3c47] text-[#FAF8F4] rounded-2xl p-6 shadow-lg">
-          <h2 className="text-base font-bold text-[#FAF8F4] mb-1">
-            מחולל קישורים למעקב קמפיינים (Instagram / Facebook / Google Ads)
-          </h2>
-          <p className="text-xs text-[#C9BBA7] mb-5">
-            צרו קישור מתויג לשיתוף בפוסטים או מודעות כדי לראות בדיוק מאיזה פרסום ומילת חיפוש הגיעו הלקוחות.
-          </p>
+          <h2 className="text-base font-bold text-[#FAF8F4] mb-1">{c.utmTitle}</h2>
+          <p className="text-xs text-[#C9BBA7] mb-5">{c.utmSub}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <input
               type="text"
               value={utmSource}
               onChange={(e) => setUtmSource(e.target.value)}
-              placeholder="מקור (instagram / google / whatsapp)"
+              placeholder={c.utmSourcePh}
               className="rounded-xl bg-white/10 border border-white/20 px-3.5 py-2.5 text-sm text-white placeholder:text-white/50 outline-none"
             />
             <input
               type="text"
               value={utmCampaign}
               onChange={(e) => setUtmCampaign(e.target.value)}
-              placeholder="שם קמפיין (kitchen-design)"
+              placeholder={c.utmCampPh}
               className="rounded-xl bg-white/10 border border-white/20 px-3.5 py-2.5 text-sm text-white placeholder:text-white/50 outline-none"
             />
             <input
               type="text"
               value={utmTerm}
               onChange={(e) => setUtmTerm(e.target.value)}
-              placeholder="מילת חיפוש / נושא (עיצוב מטבח)"
+              placeholder={c.utmTermPh}
               className="rounded-xl bg-white/10 border border-white/20 px-3.5 py-2.5 text-sm text-white placeholder:text-white/50 outline-none"
             />
           </div>
@@ -720,7 +908,7 @@ export function StudioVaultPage() {
               className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#C9BBA7] text-[#122931] font-bold text-xs cursor-pointer shrink-0"
             >
               {copiedUtm ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedUtm ? 'הועתק!' : 'העתקת קישור'}</span>
+              <span>{copiedUtm ? c.copied : c.copyLink}</span>
             </button>
           </div>
         </div>
